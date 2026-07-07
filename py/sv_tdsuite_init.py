@@ -31,6 +31,7 @@ from typing import Tuple
 
 NODE_OFFSET_DISTANCE: int = 200
 
+# project_container_name assumed to be in root, just plain name, no slashes
 def init(project_container_name: str = "project1"):
 	print("sv_tdsuite initializing begin...")
 	
@@ -42,37 +43,49 @@ def init(project_container_name: str = "project1"):
 		return
 	
 	add_python_dat_nodes()
+	add_glsl_dat_nodes(project_container_name)
 	
 	print("sv_tdsuite initializing completed.")
 	
 def add_python_dat_nodes():
-	# Define where the very first node should sit in the network editor
 	start_pos: Tuple[int, int] = (0, 600) 
 	
-	scripts = [
-		("sv_tdsuite/py/sv_tdsuite_init.py", "sv_tdsuite_init"),
-		("sv_tdsuite/py/sv.py", "sv"),
-		("sv_tdsuite/py/sv_qtouch.py", "sv_qtouch")
+	py_module_names = [
+		"sv_tdsuite_init", "sv", "sv_qtouch"
 	]
 	
-	for index, (filepath, name) in enumerate(scripts):
-		add_python_dat(filepath, name, index, start_pos)
+	for index, name in enumerate(py_module_names):
+		filepath = f"sv_tdsuite/py/{name}.py"
+		full_op_path = name
+		add_python_dat(filepath, full_op_path, index, start_pos)
+
+def add_glsl_dat_nodes(project_container_name):
+	start_pos: Tuple[int, int] = (0, 600) 
+	
+	glsl_module_names = [
+		"sv_common", "sv_sdfcommon", "sv_sdfinterm", "sv_sup", "sv_iqn"
+	]
+	
+	for index, name in enumerate(glsl_module_names):
+		filepath = f"sv_tdsuite/glsl/{name}.glsl"
+		full_op_path = f"/{project_container_name}/{name}" 
+		add_python_dat(filepath, full_op_path, index, start_pos)
 	
 # If such op exists in root, it will be deleted and remade.
 def add_python_dat(
-	proj_relative_filepath: str, # for example, "sv_tdsuite/py/sv.py"
-	op_name: str, 
+	proj_relative_filepath: str, # Relative to project folder, for example, "sv_tdsuite/py/sv.py"
+	full_op_path: str, #something like "/project1/text_node" or just "node" for root level
 	index: int, 
 	initial_pos: Tuple[int, int]
 ) -> td.textDAT:
 
 	assert proj_relative_filepath and proj_relative_filepath.strip(), "proj_relative_filepath cannot be empty"
-	assert op_name and op_name.strip(), "op_name cannot be empty"
+	assert full_op_path and full_op_path.strip(), "full_op_path cannot be empty"
 
 	# find and destroy the old node if it exists
-	existing_dat = td.root.op(op_name)
+	existing_dat = td.op(full_op_path)
 	if existing_dat is not None:
-		print(f"   add_python_dat: op {op_name} already exists, deleting")
+		print(f"   add_python_dat: op {full_op_path} already exists, deleting")
 		existing_dat.destroy()
 
 	# clean the input path to normalize slashes and remove leading/trailing slashes
@@ -80,8 +93,14 @@ def add_python_dat(
 
 	expression_string: str = f"project.folder + '/{clean_relative_path}'"
 
-	# create the node and assign the expression
-	new_dat: td.textDAT = td.root.create(td.textDAT, op_name)
+	
+	parent_network_path, node_name = os.path.split(full_op_path)
+	parent_network = td.op(parent_network_path) if parent_network_path else td.root
+	
+	assert parent_network is not None, f"Target container network '{parent_network_path}' does not exist!"
+
+	# 4. Use the simplified TouchDesigner design pattern to create the operator
+	new_dat: td.textDAT = parent_network.create(td.textDAT, node_name)
 	new_dat.par.file.expr = expression_string
 	new_dat.par.syncfile = True
 	
