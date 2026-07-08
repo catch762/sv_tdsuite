@@ -28,6 +28,7 @@
 import os
 import td
 import sys
+import importlib
 from typing import Tuple
 
 pyfolder = os.path.join(td.project.folder, 'sv_tdsuite/py')
@@ -37,8 +38,6 @@ if pyfolder not in sys.path:
 import sv
 import sv_toolbar
 
-coordsys_root = sv.CoordSystem(0, 600)
-
 # project_container_name assumed to be in root, just plain name, no slashes
 def init(project_container_name: str = "project1"):
 	print("sv_tdsuite initializing begin...")
@@ -46,7 +45,7 @@ def init(project_container_name: str = "project1"):
 	project_container_name = sv.cleanstr(project_container_name)
 	
 	# now everywhere in project u can refer to it with sv.projname()
-	sv.save_projname(project_container_name, coordsys_root.pos_for(0, 1))
+	sv.save_projname(project_container_name, sv.coordsys_root.pos_for(0, 1))
 	
 	project_container = td.root.op(project_container_name)
 	if project_container is None:
@@ -61,8 +60,10 @@ def init(project_container_name: str = "project1"):
 	print("sv_tdsuite initializing completed.")
 	
 def add_python_dat_nodes():
+	# I have to include all my code here, if i just import some internal py files,
+	# without creating node like this, there will be caching issues
 	py_module_names = [
-		"sv_tdsuite_init", "sv", "sv_qtouch"
+		"sv_tdsuite_init", "sv", "sv_qtouch", "sv_toolbar"
 	]
 	
 	for index, name in enumerate(py_module_names):
@@ -100,7 +101,7 @@ def add_text_dat_for_file(
 	this_node.par.file.expr = expression_string
 	this_node.par.syncfile = True
 
-	coordsys_root.move_node(this_node, index)
+	sv.coordsys_root.move_node(this_node, index)
 	
 	return this_node
 	

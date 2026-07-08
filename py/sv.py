@@ -26,6 +26,9 @@ class CoordSystem:
 		posY = self.y - self.spacing * y_index
 		return posX, posY
 
+coordsys_root = CoordSystem(0, 600) 
+coordsys_proj = CoordSystem(0, 0) #at /projname()
+
 def cleanstr(string : str) -> str:
 	assert string, "String must be non-empty!"
 	stripped_version = string.strip()
