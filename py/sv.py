@@ -70,7 +70,7 @@ def process_abs_path(absolute_path : str) -> Tuple[Any, str, Any] | None:
 def process_projrel_path(proj_relative_path : str) -> Tuple[Any, str, Any] | None:
 	return process_abs_path(proj_relative_path_to_abs(proj_relative_path))
 	
-def proj_relative_path_to_abs(proj_relative_path : str):
+def proj_relative_path_to_abs(proj_relative_path : str) -> str:
 	proj_relative_path = cleanstr(proj_relative_path)
 	return f"/{projname()}/{proj_relative_path}"
 
