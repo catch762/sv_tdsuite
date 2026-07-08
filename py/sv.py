@@ -4,6 +4,28 @@ import os
 import td
 from typing import Any, Tuple
 
+class CoordSystem:
+	def __init__(self, x : int = 0, y : int = 0, spacing = 200):
+		self.x = x
+		self.y = y
+		self.spacing = spacing
+		
+	def move_to(self, x : int, y : int):
+		self.x = x
+		self.y = y
+		
+	def move_node(self, node, x_index : int, y_index : int = 0):
+		assert(node)
+		posX, posY = self.pos_for(x_index, y_index)
+		node.nodeX = posX
+		node.nodeY = posY
+
+	# y-indexes go down, not up	
+	def pos_for(self, x_index : int, y_index : int = 0) -> Tuple[int, int]:
+		posX = self.x + self.spacing * x_index
+		posY = self.y - self.spacing * y_index
+		return posX, posY
+
 def cleanstr(string : str) -> str:
 	assert string, "String must be non-empty!"
 	stripped_version = string.strip()

@@ -37,8 +37,7 @@ if pyfolder not in sys.path:
 import sv
 import sv_toolbar
 
-ROOT_START_POS: Tuple[int, int] = (0, 600) 
-NODE_OFFSET_DISTANCE: int = 200
+coordsys_root = sv.CoordSystem(0, 600)
 
 # project_container_name assumed to be in root, just plain name, no slashes
 def init(project_container_name: str = "project1"):
@@ -47,7 +46,7 @@ def init(project_container_name: str = "project1"):
 	project_container_name = sv.cleanstr(project_container_name)
 	
 	# now everywhere in project u can refer to it with sv.projname()
-	sv.save_projname(project_container_name, (ROOT_START_POS[0], ROOT_START_POS[1] - NODE_OFFSET_DISTANCE))
+	sv.save_projname(project_container_name, coordsys_root.pos_for(0, 1))
 	
 	project_container = td.root.op(project_container_name)
 	if project_container is None:
@@ -69,7 +68,7 @@ def add_python_dat_nodes():
 	for index, name in enumerate(py_module_names):
 		filepath = f"sv_tdsuite/py/{name}.py"
 		full_op_path = f"/{name}"
-		add_text_dat_for_file(filepath, full_op_path, index, ROOT_START_POS)
+		add_text_dat_for_file(filepath, full_op_path, index)
 
 def add_glsl_dat_nodes():
 	glsl_module_names = [
@@ -79,14 +78,13 @@ def add_glsl_dat_nodes():
 	for index, name in enumerate(glsl_module_names):
 		filepath = f"sv_tdsuite/glsl/{name}.glsl"
 		full_op_path = f"/{sv.projname()}/{name}_glsl" 
-		add_text_dat_for_file(filepath, full_op_path, index, ROOT_START_POS)
+		add_text_dat_for_file(filepath, full_op_path, index)
 	
 # If such op exists in root, it will be deleted and remade.
 def add_text_dat_for_file(
 	proj_relative_filepath: str, # Relative to project folder, for example, "sv_tdsuite/py/sv.py"
 	full_op_path: str, #something like "/project1/text_node" or just "node" for root level
-	index: int, 
-	initial_pos: Tuple[int, int]
+	index: int
 ) -> td.textDAT:
 	proj_relative_filepath = sv.cleanstr(proj_relative_filepath)
 	full_op_path = sv.cleanstr(full_op_path)
@@ -101,8 +99,8 @@ def add_text_dat_for_file(
 	this_node: td.textDAT = parent_node.create(td.textDAT, this_node_name)
 	this_node.par.file.expr = expression_string
 	this_node.par.syncfile = True
-	this_node.nodeX = initial_pos[0] + (index * NODE_OFFSET_DISTANCE)
-	this_node.nodeY = initial_pos[1]
+
+	coordsys_root.move_node(this_node, index)
 	
 	return this_node
 	
