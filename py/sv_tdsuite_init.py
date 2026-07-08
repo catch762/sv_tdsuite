@@ -44,7 +44,7 @@ NODE_OFFSET_DISTANCE: int = 200
 def init(project_container_name: str = "project1"):
 	print("sv_tdsuite initializing begin...")
 	
-	assert project_container_name and project_container_name.strip(), "project_container_name cannot be empty"
+	project_container_name = sv.cleanstr(project_container_name)
 	
 	# now everywhere in project u can refer to it with sv.projname()
 	sv.save_projname(project_container_name, (ROOT_START_POS[0], ROOT_START_POS[1] - NODE_OFFSET_DISTANCE))
@@ -88,18 +88,13 @@ def add_text_dat_for_file(
 	index: int, 
 	initial_pos: Tuple[int, int]
 ) -> td.textDAT:
-
-	assert proj_relative_filepath and proj_relative_filepath.strip(), "proj_relative_filepath cannot be empty"
-	assert full_op_path and full_op_path.strip(), "full_op_path cannot be empty"
-
+	proj_relative_filepath = sv.cleanstr(proj_relative_filepath)
+	full_op_path = sv.cleanstr(full_op_path)
 
 	parent_node, this_node_name, this_node = sv.process_abs_path(full_op_path)
+	sv.destroy_if_exists(this_node)
 
 	assert parent_node is not None, f"parent_node for '{full_op_path}' does not exist!"
-
-	if this_node is not None:
-		print(f"   add_text_dat_for_file: op {full_op_path} already exists, deleting")
-		this_node.destroy()
 
 	expression_string: str = sv.project_relative_file_path_to_expression(proj_relative_filepath)
 
