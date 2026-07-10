@@ -36,7 +36,6 @@ if pyfolder not in sys.path:
     sys.path.append(pyfolder)
 
 import sv
-import sv_toolbar
 
 # project_container_name assumed to be in root, just plain name, no slashes
 def init(project_container_name: str = "project1"):
@@ -54,9 +53,7 @@ def init(project_container_name: str = "project1"):
 	
 	add_python_dat_nodes()
 	add_glsl_dat_nodes()
-	
-	sv_toolbar.build_toolbar()
-	
+		
 	print("sv_tdsuite initializing completed.")
 
 def add_python_dat_nodes():

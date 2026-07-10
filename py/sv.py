@@ -133,12 +133,3 @@ def projname() -> str | None:
 	
 	return dat_node.text
 	
-STD_HEIGHT = 24
-def make_momentary_button(abspath: str, callback_on_activate):
-	btn, _ = sv.make_if_needed_abs(abspath, td.buttonCOMP)
-	
-	btn.par.buttontype = 0             # 0 = Momentary type
-	btn.par.w = 50
-	btn.par.h = STD_HEIGHT
-	btn.par.label = name
-	coordsys_toolbar.move_node(btn, 0, 2 * stripeindex + 1)
