@@ -67,9 +67,11 @@ def process_abs_path(absolute_path : str) -> Tuple[Any, str, Any] | None:
 	
 	return parent_node, node_name, end_node
 
+#returns: Tuple[Node, bool was_reused]
+#note: doesnt check node type, if anything with this name exists, it qualifies for reuse
 def make_if_needed_abs(	absolute_path : str,
 						td_node_type, # types like: td.textDAT
-						reuse_existing_node : bool = False ):
+						reuse_existing_node : bool = False ) -> Tuple[Any, bool] | None:
 	parent_node, node_name, existing_node = process_abs_path(absolute_path)
 	
 	if parent_node is None:
@@ -80,16 +82,18 @@ def make_if_needed_abs(	absolute_path : str,
 		return None
 	
 	if existing_node is not None and reuse_existing_node is True:
-		return existing_node
+		return existing_node, True
 		
 	destroy_if_exists(existing_node)
 	created_node = parent_node.create(td_node_type, node_name)
+	
 	# idk why i need this fix, surely we deleted old node with this name already.
 	# but it still adds "1" to name. like the name exists. but its not.
 	# and weirdly, this simply fixes it:
 	created_node.name = node_name 
 	assert created_node.name == node_name, "We expect created node to have exact name requested, no suffix added"
-	return created_node
+	
+	return created_node, False
 
 def process_projrel_path(proj_relative_path : str) -> Tuple[Any, str, Any] | None:
 	return process_abs_path(proj_relative_path_to_abs(proj_relative_path))
@@ -128,3 +132,13 @@ def projname() -> str | None:
 		return None
 	
 	return dat_node.text
+	
+STD_HEIGHT = 24
+def make_momentary_button(abspath: str, callback_on_activate):
+	btn, _ = sv.make_if_needed_abs(abspath, td.buttonCOMP)
+	
+	btn.par.buttontype = 0             # 0 = Momentary type
+	btn.par.w = 50
+	btn.par.h = STD_HEIGHT
+	btn.par.label = name
+	coordsys_toolbar.move_node(btn, 0, 2 * stripeindex + 1)

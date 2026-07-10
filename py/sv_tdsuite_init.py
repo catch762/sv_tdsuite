@@ -58,7 +58,7 @@ def init(project_container_name: str = "project1"):
 	sv_toolbar.build_toolbar()
 	
 	print("sv_tdsuite initializing completed.")
-	
+
 def add_python_dat_nodes():
 	# I have to include all my code here, if i just import some internal py files,
 	# without creating node like this, there will be caching issues
@@ -90,7 +90,7 @@ def add_text_dat_for_file(
 	proj_relative_filepath = sv.cleanstr(proj_relative_filepath)
 	op_absolute_path = sv.cleanstr(op_absolute_path)
 
-	result_node: td.textDAT = sv.make_if_needed_abs(op_absolute_path, td.textDAT)
+	result_node, _ = sv.make_if_needed_abs(op_absolute_path, td.textDAT)
 
 	expression_string: str = sv.project_relative_file_path_to_expression(proj_relative_filepath)
 	result_node.par.file.expr = expression_string
