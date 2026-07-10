@@ -67,16 +67,16 @@ def process_abs_path(absolute_path : str) -> Tuple[Any, str, Any] | None:
 	
 	return parent_node, node_name, end_node
 
-def ensure_exists_abs(	absolute_path : str,
+def make_if_needed_abs(	absolute_path : str,
 						td_node_type, # types like: td.textDAT
-						reuse_existing_node : Boolean = False ):
+						reuse_existing_node : bool = False ):
 	parent_node, node_name, existing_node = process_abs_path(absolute_path)
 	
 	if parent_node is None:
-		print(f"ensure_exists_abs error: parent_node was None for path [{absolute_path}]")
+		print(f"make_if_needed_abs error: parent_node was None for path [{absolute_path}]")
 		return None
 	if not node_name.strip():
-		print(f"ensure_exists_abs error: node_name was empty for path [{absolute_path}]")
+		print(f"make_if_needed_abs error: node_name was empty for path [{absolute_path}]")
 		return None
 	
 	if existing_node is not None and reuse_existing_node is True:

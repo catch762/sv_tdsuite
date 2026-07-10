@@ -53,33 +53,3 @@ def make_momentary_button(stripeindex: int, name: str):
 	
 	btn.par.label = name
 	coordsys_toolbar.move_node(btn, 0, 2 * stripeindex + 1)
-	
-	
-		complete this:
-	
-	
-	# Create a Panel Execute DAT to handle clicks
-    panel_exec_name = name + "_panelExec"
-    if op(container, panel_exec_name) is None:
-        panel_exec = td.createOperator(container, 'panelexec', panel_exec_name)
-    else:
-        panel_exec = op(container, panel_exec_name)
-    
-    # Configure Panel Execute DAT
-    panel_exec.par.Panels = button.name
-    panel_exec.par.OffToOn = 1    # trigger on press
-    panel_exec.par.OnOffToOn = 1
-    
-    # Build the onOffToOn function
-    if action_code is None:
-        action_code = "print('Button clicked!')"
-    
-    code = f"""
-def onOffToOn(panelValue):
-    # panelValue is 1 when pressed (for momentary)
-    {action_code}
-    return
-"""
-    
-    panel_exec.text = code
-    

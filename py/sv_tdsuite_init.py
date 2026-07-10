@@ -68,8 +68,8 @@ def add_python_dat_nodes():
 	
 	for index, name in enumerate(py_module_names):
 		filepath = f"sv_tdsuite/py/{name}.py"
-		full_op_path = f"/{name}"
-		add_text_dat_for_file(filepath, full_op_path, index)
+		op_absolute_path = f"/{name}"
+		add_text_dat_for_file(filepath, op_absolute_path, index)
 
 def add_glsl_dat_nodes():
 	glsl_module_names = [
@@ -78,30 +78,24 @@ def add_glsl_dat_nodes():
 	
 	for index, name in enumerate(glsl_module_names):
 		filepath = f"sv_tdsuite/glsl/{name}.glsl"
-		full_op_path = f"/{sv.projname()}/{name}_glsl" 
-		add_text_dat_for_file(filepath, full_op_path, index)
+		op_absolute_path = sv.proj_relative_path_to_abs( f"{name}_glsl" )
+		add_text_dat_for_file(filepath, op_absolute_path, index)
 	
 # If such op exists in root, it will be deleted and remade.
 def add_text_dat_for_file(
 	proj_relative_filepath: str, # Relative to project folder, for example, "sv_tdsuite/py/sv.py"
-	full_op_path: str, #something like "/project1/text_node" or just "node" for root level
+	op_absolute_path: str, #something like "/project1/text_node" or just "node" for root level
 	index: int
 ) -> td.textDAT:
 	proj_relative_filepath = sv.cleanstr(proj_relative_filepath)
-	full_op_path = sv.cleanstr(full_op_path)
+	op_absolute_path = sv.cleanstr(op_absolute_path)
 
-	parent_node, this_node_name, this_node = sv.process_abs_path(full_op_path)
-	sv.destroy_if_exists(this_node)
-
-	assert parent_node is not None, f"parent_node for '{full_op_path}' does not exist!"
+	result_node: td.textDAT = sv.make_if_needed_abs(op_absolute_path, td.textDAT)
 
 	expression_string: str = sv.project_relative_file_path_to_expression(proj_relative_filepath)
-
-	this_node: td.textDAT = parent_node.create(td.textDAT, this_node_name)
-	this_node.par.file.expr = expression_string
-	this_node.par.syncfile = True
-
-	sv.coordsys_root.move_node(this_node, index)
+	result_node.par.file.expr = expression_string
+	result_node.par.syncfile = True
+	sv.coordsys_root.move_node(result_node, index)
 	
-	return this_node
+	return result_node
 	
