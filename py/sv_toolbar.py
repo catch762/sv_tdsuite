@@ -29,27 +29,14 @@ def stripe_abs_path(index: int) -> str:
 	return item_abs_path(f"svag_stripe_{index}")
 	
 def make_stripe(index: int):
-	toolbar, name, existing_stripe = sv.process_abs_path(stripe_abs_path(index))
-
-	sv.destroy_if_exists(existing_stripe)
-	
-	stripe = toolbar.create(td.containerCOMP, name)
-	coordsys_toolbar.move_node(stripe, 0, 2 * index)
+	stripe = sv.make_if_needed_abs(stripe_abs_path(index), td.containerCOMP)
+	coordsys_toolbar.move_node(stripe, 0, 2 * index)	
 	
 def make_momentary_button(stripeindex: int, name: str):
-	toolbar, _, existing_item = sv.process_abs_path(item_abs_path(name))
-	
-	sv.destroy_if_exists(existing_item)
-	
-	#bug: it adds 1 to the name, even though its 100% not there, fucker
-	btn = toolbar.create(td.buttonCOMP, name)
-	#well at least the fix is easy:
-	btn.name = name
-	assert btn.name == name
+	btn = sv.make_if_needed_abs(item_abs_path(name), td.buttonCOMP)
 	
 	btn.par.buttontype = 0             # 0 = Momentary type
 	btn.par.w = 50
 	btn.par.h = STD_HEIGHT
-	
 	btn.par.label = name
 	coordsys_toolbar.move_node(btn, 0, 2 * stripeindex + 1)
