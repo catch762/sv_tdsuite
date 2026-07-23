@@ -1,13 +1,18 @@
 import struct
 from enum import IntEnum
 from typing import Callable, Dict
-
+from functools import partial
+from typing import Optional
+import struct
+from dataclasses import dataclass
 # hello 2022.33910
 
 class PacketType(IntEnum):
     """Must match C++ enum PacketType, obviously"""
     TreeData = 0
-    Whatever = 1
+    TreeDataWithVarNames = 1
+	VarNames = 2
+	PresetsExport = 3
 	
 PacketTypeInt = int
 
@@ -19,7 +24,9 @@ class QTouchTcpConnection:
 		self.buffer = bytearray()
 		self.packetHandlers : Dict[PacketTypeInt, PacketHandler] = {}
 
-		self.packetHandlers[PacketType.TreeData] = self.processExample
+		self.packetHandlers[PacketType.TreeData] = partial(self.processTreeDataPacket, with_var_names = False)
+		self.packetHandlers[PacketType.TreeDataWithVarNames] = partial(self.processTreeDataPacket, with_var_names = True)
+		self.packetHandlers[PacketType.PresetsExport] = self.processExample
 
 	# This mirrors method with same name from TD TCP Dat.
 	def onConnect(self, dat, peer):
@@ -84,6 +91,9 @@ class QTouchTcpConnection:
 			continue
 		
 	def processExample(self, contentBlock: bytes) -> None:
+		print(f"processExample: received contentBlock size = {len(contentBlock)}")
+		
+	def processTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> None:
 		print(f"processExample: received contentBlock size = {len(contentBlock)}")
 		
 # Global instance shared across all importing modules
