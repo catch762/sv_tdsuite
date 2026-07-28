@@ -8,9 +8,9 @@ from dataclasses import dataclass
 # hello 2022.33910
 
 class PacketType(IntEnum):
-    """Must match C++ enum PacketType, obviously"""
-    TreeData = 0
-    TreeDataWithVarNames = 1
+	"""Must match C++ enum PacketType, obviously"""
+	TreeData = 0
+	TreeDataWithVarNames = 1
 	VarNames = 2
 	PresetsExport = 3
 	
@@ -23,12 +23,12 @@ PacketHandler = Callable[[bytes], None]
 
 @dataclass
 class TreeDataWithVarNamesPacketContent:
-    preset_name: str
-    var_names: Optional[list[str]]
-    total_entries: int
-    first_index: int
-    last_index: int
-    vec4_values: list[Vec4]
+	preset_name: str
+	var_names: Optional[list[str]]
+	total_entries: int
+	first_index: int
+	last_index: int
+	vec4_values: list[Vec4]
 
 class QTouchTcpConnection:
 	def __init__(self):
@@ -102,8 +102,9 @@ class QTouchTcpConnection:
 			continue
 		
 	#########################
-	# READ UTILS FUNCTIONS: #
+	# BASIC READ FUNCTIONS: #
 	#########################
+	
 	def read_u32(self, buf: bytes, offset: ByteOffset) -> tuple[int, ByteOffset]:
 		U32_FMT = "<I"
 		U32_SIZE = 4
@@ -116,7 +117,7 @@ class QTouchTcpConnection:
 		VEC4_SIZE = 16
 		if offset + VEC4_SIZE > len(buf):
 			raise ValueError("unexpected end of packet while reading vec4")
-		return struct.unpack_from(VEC4_FMT, buf, offset)[0], offset + VEC4_SIZE
+		return struct.unpack_from(VEC4_FMT, buf, offset), offset + VEC4_SIZE
 
 	def read_bytes(self, buf: bytes, offset: ByteOffset, size: int) -> tuple[bytes, ByteOffset]:
 		if size < 0 or offset + size > len(buf):
@@ -124,56 +125,73 @@ class QTouchTcpConnection:
 		return buf[offset:offset + size], offset + size
 
 	def read_string_section(self, buf: bytes, offset: ByteOffset) -> tuple[str, ByteOffset]:
-		size, offset = read_u32(buf, offset)
-		raw, offset = read_bytes(buf, offset, size)
+		size, offset = self.read_u32(buf, offset)
+		raw, offset = self.read_bytes(buf, offset, size)
 		return raw.decode("utf-8"), offset
 		
+	###############################################
+	# HIGH-LEVEL, PACKET-SPECIFIC READ FUNCTIONS: #
+	###############################################
+	
 	def parse_var_names_section(self, buf: bytes, offset: ByteOffset) -> tuple[list[str], ByteOffset]:
-		namesCount, offset = read_u32(buf, offset)
 		names = []
+		
+		namesCount, offset = self.read_u32(buf, offset)
 		for i in range(namesCount):
-			name, offset = read_string_section(buf, offset)
+			name, offset = self.read_string_section(buf, offset)
 			names.append(name)
 		return names, offset
 	
-	##############################
-	# PACKETS HANDLER FUNCTIONS: #
-	##############################	
-	def processExample(self, contentBlock: bytes) -> None:
-		print(f"processExample: received contentBlock size = {len(contentBlock)}")
-		
-	def processTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
-		print(f"processTreeDataPacket: processing contentBlock size = {len(contentBlock)}")
+	def parseTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
+		print(f"parseTreeDataPacket: processing contentBlock size = {len(contentBlock)}")
 		offset = 0
 		
-		preset_name, offset = read_string_section(buf, offset)
-		
-		var_names = None
-		if with_var_names:
-			var_names, offset = parse_var_names_section(contentBlock, offset)
-			
-		total_entries, offset = read_u32(buf, offset)
-		first_index, offset = read_u32(buf, offset)
-		last_index, offset = read_u32(buf, offset)
+		preset_name, offset = self.read_string_section(contentBlock, offset)
+		total_entries, offset = self.read_u32(contentBlock, offset)
+		first_index, offset = self.read_u32(contentBlock, offset)
+		last_index, offset = self.read_u32(contentBlock, offset)
 
+		#Next piece of data: N x vec4 vars
 		values_count = last_index - first_index + 1
 		assert values_count >= 0
-		
 		vec4_values = []
-		for i in range(valuesCount):
-			vec4_value : Vec4, offset = self.read_vec4(buf, offset)
+		for i in range(values_count):
+			vec4_value, offset = self.read_vec4(contentBlock, offset)
+			#assert isinstance(vec4_value, Vec4)
+			print(f"Individual vec4 value: {vec4_value}");
 			vec4_values.append(vec4_value)
 			
-		return TreeDataWithVarNamesPacketContent(
+		
+		#Next piece of data: optional M x var names 
+		var_names = None
+		if with_var_names:
+			var_names, offset = self.parse_var_names_section(contentBlock, offset)
+			assert len(var_names) == total_entries
+		
+		assert offset == len(contentBlock), f"Finished parsing, but 'offset' [{offset}] is not at the end of contentBlock, expected [{len(contentBlock)}]"
+			
+		result = TreeDataWithVarNamesPacketContent(
 			preset_name=preset_name,
 			var_names=var_names,
 			total_entries=total_entries,
 			first_index=first_index,
 			last_index=last_index,
-			vec4_values=vec4_values,
+			vec4_values=vec4_values
 		)
 		
+		print(f"parseTreeDataPacket result is: {result}")
 		
+		return result
+	
+	##############################
+	# PACKETS HANDLER FUNCTIONS: #
+	##############################
+	
+	def processExample(self, contentBlock: bytes) -> None:
+		print(f"processExample: received contentBlock size = {len(contentBlock)}")
+		
+	def processTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
+		packet: TreeDataWithVarNamesPacketContent = self.parseTreeDataPacket(contentBlock, with_var_names)
 		
 # Global instance shared across all importing modules
 qtouchInstance = QTouchTcpConnection()
