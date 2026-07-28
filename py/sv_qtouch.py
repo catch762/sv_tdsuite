@@ -5,7 +5,7 @@ from functools import partial
 from typing import Optional
 import struct
 from dataclasses import dataclass
-# hello 2022.33910
+import sv
 
 class PacketType(IntEnum):
 	"""Must match C++ enum PacketType, obviously"""
@@ -29,6 +29,11 @@ class TreeDataWithVarNamesPacketContent:
 	first_index: int
 	last_index: int
 	vec4_values: list[Vec4]
+
+class UsedOpNames:
+	DatWithVarNames = "varnames"
+	DatWithQtouchVec4Vars = "qtouch_vardata"
+	DatWithQtouchVec4Vars_Temp = "qtouch_vardata_tmp"
 
 class QTouchTcpConnection:
 	def __init__(self):
@@ -79,6 +84,8 @@ class QTouchTcpConnection:
 		
 		if len(self.buffer) < packetSize:
 			return False
+			
+		print(f"Handling packet of type {packetType}")
 			
 		contentSize = packetSize - HEADER_SIZE
 		
@@ -143,7 +150,7 @@ class QTouchTcpConnection:
 		return names, offset
 	
 	def parseTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
-		print(f"parseTreeDataPacket: processing contentBlock size = {len(contentBlock)}")
+		print(f"parseTreeDataPacket: processing contentBlock size = {len(contentBlock)} with_var_names = {with_var_names}")
 		offset = 0
 		
 		preset_name, offset = self.read_string_section(contentBlock, offset)
@@ -157,8 +164,7 @@ class QTouchTcpConnection:
 		vec4_values = []
 		for i in range(values_count):
 			vec4_value, offset = self.read_vec4(contentBlock, offset)
-			#assert isinstance(vec4_value, Vec4)
-			print(f"Individual vec4 value: {vec4_value}");
+			#print(f"Individual vec4 value: {vec4_value}");
 			vec4_values.append(vec4_value)
 			
 		
@@ -179,8 +185,6 @@ class QTouchTcpConnection:
 			vec4_values=vec4_values
 		)
 		
-		print(f"parseTreeDataPacket result is: {result}")
-		
 		return result
 	
 	##############################
@@ -192,6 +196,62 @@ class QTouchTcpConnection:
 		
 	def processTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
 		packet: TreeDataWithVarNamesPacketContent = self.parseTreeDataPacket(contentBlock, with_var_names)
+		
+		print(f"parseTreeDataPacket result is: {packet}")
+		
+		op_varnames = sv.proj_op(UsedOpNames.DatWithVarNames)
+		assert op_varnames
+		
+		op_vardata = sv.proj_op(UsedOpNames.DatWithQtouchVec4Vars)
+		assert op_vardata
+		
+		op_vardata_TEMP = sv.proj_op(UsedOpNames.DatWithQtouchVec4Vars_Temp)
+		assert op_vardata_TEMP
+		
+		
+		####################
+		# <SAVE VAR NAMES> #
+		####################
+		if with_var_names:
+			op_varnames.clear()
+			for var_name in packet.var_names:
+				op_varnames.appendRow(var_name)
+		#####################
+		# </SAVE VAR NAMES> #
+		#####################
+		
+		
+		########################################
+		# <SAVE VAR DATA AND FORM FINAL TABLE> #
+		########################################
+		
+		assert op_varnames.numRows == packet.total_entries #variables count
+		
+		new_vardata_rows = []
+		for i in range(len(packet.vec4_values)):
+			var_index = packet.first_index + i
+			var_name = op_varnames[var_index, 0].val
+			x,y,z,w = packet.vec4_values[i]
+			new_vardata_rows.append([var_name,x,y,z,w])
+		
+		# this whole thing is supposed to be efficient, cause its one copy operation on final node.
+		# we dont want to jerk final node more than once
+		op_vardata_TEMP.copy(op_vardata)
+		
+		if op_vardata_TEMP.numRows != packet.total_entries:
+			op_vardata_TEMP.setSize(packet.total_entries, op_vardata_TEMP.numCols)
+		
+		for i in range(len(new_vardata_rows)):
+			index = packet.first_index + i
+			op_vardata_TEMP.replaceRow(index, new_vardata_rows[i])
+		op_vardata.copy(op_vardata_TEMP)
+		
+		#########################################
+		# </SAVE VAR DATA AND FORM FINAL TABLE> #
+		#########################################
+		
+		
+		print("processTreeDataPacket finished.") 
 		
 # Global instance shared across all importing modules
 qtouchInstance = QTouchTcpConnection()

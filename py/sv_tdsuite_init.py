@@ -51,8 +51,8 @@ def init(project_container_name: str = "project1"):
 		print(f"Error: project_container '{project_container_name}' does not exist in root.")
 		return
 	
-	add_python_dat_nodes()
-	add_glsl_dat_nodes()
+	add_python_dat_nodes() #to /root/...
+	add_glsl_dat_nodes() #to /root/project container/...
 		
 	print("sv_tdsuite initializing completed.")
 

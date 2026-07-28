@@ -133,3 +133,8 @@ def projname() -> str | None:
 	
 	return dat_node.text
 	
+def proj():
+	return td.root.op(projname())
+	
+def proj_op(path : str):
+	return proj().op(path)
