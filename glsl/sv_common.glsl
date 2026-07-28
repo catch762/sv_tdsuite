@@ -1,6 +1,6 @@
 //The only two uniforms here
-uniform float  time;
-//below: uniform int ds_chselector;
+uniform float  	time;
+uniform ivec4 	control;
 
 //**********************
 // PREPROCESSOR STUFF //
@@ -362,7 +362,7 @@ float powmul(float v, vec2 pow_mul){return pow(v, pow_mul.x) * pow_mul.y;}
 // DEBUG SYSTEM //
 //****************
 
-uniform ivec2 ds_chselector; //x is ds - debug value, y is multisampling
+//uniform ivec2 ds_chselector; //x is ds - debug value, y is multisampling
 
 vec4    ds_ca = vec4(1,0,1,0)/10;
 /*vec4    ds_c1 = vec4(1,0,0,0)/10;
