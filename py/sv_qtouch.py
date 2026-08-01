@@ -13,6 +13,7 @@ class PacketType(IntEnum):
 	TreeDataWithVarNames = 1
 	VarNames = 2
 	PresetsExport = 3
+	LoadGlslFiles = 4
 	
 PacketTypeInt = int
 HEADER_SIZE = 8
@@ -34,6 +35,8 @@ class UsedOpNames:
 	DatWithVarNames = "varnames"
 	DatWithQtouchVec4Vars = "qtouch_vardata"
 	DatWithQtouchVec4Vars_Temp = "qtouch_vardata_tmp"
+	TcpIpDat = "qtouch_tcpip_connection"
+	DatWithGLSLFilesToParse = "sup_glsl_files"
 
 class QTouchTcpConnection:
 	def __init__(self):
@@ -44,14 +47,15 @@ class QTouchTcpConnection:
 		self.packetHandlers[PacketType.TreeDataWithVarNames] = partial(self.processTreeDataPacket, with_var_names = True)
 		self.packetHandlers[PacketType.PresetsExport] = self.processExample
 
-	# This mirrors method with same name from TD TCP Dat.
+	######################################
+	# MIRRORING METHODS FROM TD TCP DAT: #
+	######################################
+
 	def onConnect(self, dat, peer):
 		print("QTouchTcpConnection: connected")
 		self.buffer.clear()
 		return
 
-	# This mirrors method with same name from TD TCP Dat.
-	#
 	# Ignore everything except 'bytes'. This argument is arbitrary
 	# fragment of TCP stream data, it may contain half of packet, it may
 	# contain 1 byte, anything. The fragments are guaranteed to be in correct
@@ -62,11 +66,43 @@ class QTouchTcpConnection:
 		self.extractAndProcessAllAvailablePackets()
 		return
 
-	# This mirrors method with same name from TD TCP Dat.
 	def onClose(self, dat, peer):
 		print("QTouchTcpConnection: closed")
 		self.buffer.clear()
 		return
+
+
+	########################
+	# HIGH-LEVEL USER API: #
+	########################
+
+	def send_load_glsl_packet(self):
+		glsl_files_op = sv.proj_op(UsedOpNames.DatWithGLSLFilesToParse)
+		assert glsl_files_op
+		
+		glsl_filepaths = []
+		for row in glsl_files_op.rows():
+			glsl_op = sv.proj_op(row[0])
+			assert glsl_op
+			
+			glsl_filepath = glsl_op.par.file.eval()
+			assert glsl_filepath, "glsl node mentioned must have file linked !"
+			
+			glsl_filepaths.append(glsl_filepath)
+		
+		packet = self.make_load_glsl_files_packet(glsl_filepaths)
+		self.send_bytes(packet)
+		
+		print(f"send_load_glsl_packet: sent for: {glsl_filepaths}\n{packet}")
+
+	##############
+	# INTERNALS: #
+	##############
+
+	def send_bytes(self, the_bytes):
+		tcp_op = sv.proj_op(UsedOpNames.TcpIpDat)
+		assert(tcp_op)
+		tcp_op.sendBytes(the_bytes)
 
 	# -Returns false, if wasnt enough data to process data
 	# -Returns true, if data for packet was extracted from buffer
@@ -108,10 +144,14 @@ class QTouchTcpConnection:
 		while self.tryExtractAndProcessPacket():
 			continue
 		
-	#########################
-	# BASIC READ FUNCTIONS: #
-	#########################
+		
+	##############################
+	# BASIC READ/MAKE FUNCTIONS: #
+	##############################
 	
+	def make_u32(self, value: int) -> bytes:
+		return value.to_bytes(4, byteorder='little', signed=False)
+
 	def read_u32(self, buf: bytes, offset: ByteOffset) -> tuple[int, ByteOffset]:
 		U32_FMT = "<I"
 		U32_SIZE = 4
@@ -131,10 +171,20 @@ class QTouchTcpConnection:
 			raise ValueError("unexpected end of packet while reading bytes")
 		return buf[offset:offset + size], offset + size
 
+
+	def make_string_section(self, string: str) -> bytes:
+		encoded = string.encode('utf-8')
+		return self.make_u32(len(encoded)) + encoded
+
 	def read_string_section(self, buf: bytes, offset: ByteOffset) -> tuple[str, ByteOffset]:
 		size, offset = self.read_u32(buf, offset)
 		raw, offset = self.read_bytes(buf, offset, size)
 		return raw.decode("utf-8"), offset
+		
+	def make_header(self, packet_type : PacketTypeInt, content_size : int) -> bytes:
+		total_packet_size = HEADER_SIZE + content_size
+		return self.make_u32(total_packet_size) + self.make_u32(packet_type)
+		
 		
 	###############################################
 	# HIGH-LEVEL, PACKET-SPECIFIC READ FUNCTIONS: #
@@ -186,6 +236,7 @@ class QTouchTcpConnection:
 		)
 		
 		return result
+	
 	
 	##############################
 	# PACKETS HANDLER FUNCTIONS: #
@@ -252,6 +303,21 @@ class QTouchTcpConnection:
 		
 		
 		print("processTreeDataPacket finished.") 
+	
+	
+	############################
+	# PACKETS MAKER FUNCTIONS: #
+	############################
 		
+	def make_load_glsl_files_packet(self, filePaths: list[str]) -> bytes:
+		content_block = bytearray()
+	
+		content_block += self.make_u32(len(filePaths))
+		for path in filePaths:
+			content_block += self.make_string_section(path)
+			
+		packet = self.make_header(PacketType.LoadGlslFiles, len(content_block)) + content_block
+		return packet
+	
 # Global instance shared across all importing modules
 qtouchInstance = QTouchTcpConnection()
