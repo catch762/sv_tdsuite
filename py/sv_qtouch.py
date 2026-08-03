@@ -11,9 +11,8 @@ class PacketType(IntEnum):
 	"""Must match C++ enum PacketType, obviously"""
 	TreeData = 0
 	TreeDataWithVarNames = 1
-	VarNames = 2
-	PresetsExport = 3
-	LoadGlslFiles = 4
+	PresetsExport = 2
+	LoadGlslFiles = 3
 	
 PacketTypeInt = int
 HEADER_SIZE = 8
@@ -312,7 +311,6 @@ class QTouchTcpConnection:
 	def make_load_glsl_files_packet(self, filePaths: list[str]) -> bytes:
 		content_block = bytearray()
 	
-		content_block += self.make_u32(len(filePaths))
 		for path in filePaths:
 			content_block += self.make_string_section(path)
 			
