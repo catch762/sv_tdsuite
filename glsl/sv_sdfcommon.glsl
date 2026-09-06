@@ -123,6 +123,46 @@ mat4 m_view(vec3 eye, vec3 lookat, vec3 upvec) {
         vec4(0.0, 0.0, 0.0, 1)
     );
 }
+
+vec3 makeNonParallelUpvec(vec3 vec)
+{
+    bool cameraDirLooksKindaLikeYAxis = abs(vec.y) > 0.99999;
+    return cameraDirLooksKindaLikeYAxis ? 	vec3(0, 0, 1) :
+											vec3(0, 1, 0);
+}
+
+void makeUpAndRightVec(vec3 dir, float rollRad, out vec3 rolledRight, out vec3 rolledUp)
+{
+	vec3 worldUp 	= makeNonParallelUpvec(dir);
+	
+	// Initial right and up (no roll yet)
+	vec3 right 		= normalize(cross(worldUp, dir));
+	vec3 up 		= normalize(cross(dir, 	 right));
+
+	// Apply roll: rotate (right, up) around 'dir' by 'rollRad'
+	float c = cos(rollRad);
+	float s = sin(rollRad);
+
+	rolledRight 	= right * c + up * s;
+	rolledUp 		= up * c - right * s;
+}
+
+mat4 m_view(vec3 eye, vec3 lookat, float roll) {
+    //assumes that the center of the camera (lookat) is aligned with the negative z axis in
+    //view space. Based on gluLookAt man page
+    vec3 dir = normalize(lookat - eye);
+	
+	//heres beginning of applying roll:
+	vec3 rolledRight, rolledUp;
+	makeUpAndRightVec(dir, roll, rolledRight, rolledUp);
+	
+    return mat4(
+        vec4(rolledRight, 0.0),
+        vec4(rolledUp, 0.0),
+        vec4(-dir, 0.0),
+        vec4(0.0, 0.0, 0.0, 1)
+    );
+}
 vec3 inv_mdl_trans(vec3 point, vec3 trans, vec4 rot, vec3 scale)
 {
     mat4 invmodel = inverse(m_scale(scale) * m_rot(rot.xyz, rot.w) * m_trans(trans));
@@ -154,12 +194,22 @@ vec3 	ray_dir		(float Y_fov_degrees, vec2 resolution, vec2 pixel_coord) {
     float   z   = resolution.y / tan(radians(Y_fov_degrees) / 2.0);
     return 	normalize(vec3(xy, -z));
 }
+
 Ray worldray_for_pixel(vec2 pixCoord, vec2 resolution, vec3 eye, vec3 lookat, float fov)
 {
 	vec3    dir         = ray_dir(fov, resolution, pixCoord);
 	vec3    dir_world   = ( m_view(eye,lookat,vec3(0,1,0)) * vec4(dir,0) ).xyz; //todo upvec?
 	return 	Ray(eye, dir_world);
 }
+Ray worldray_for_pixel(vec2 pixCoord, vec2 resolution, vec3 eye, vec3 lookat, float fov, float roll)
+{
+	vec3    dir         = ray_dir(fov, resolution, pixCoord);
+	vec3    dir_world   = ( m_view(eye,lookat,roll) * vec4(dir,0) ).xyz; //todo upvec?
+	return 	Ray(eye, dir_world);
+}
+
+
+
 #define ADD(mat) RES = sop_uni(RES, (mat));
 #define ADDSM(mat, SM_K) RES = sop_uni_sm(RES, (mat), SM_K);
 #define SUB(mat) RES = sop_sub(RES, (mat));
