@@ -110,19 +110,6 @@ mat4 m_scale(vec3 sc) {
         vec4(0, 0, sc.z, 0),
         vec4(0, 0, 0, 1) );
 }
-mat4 m_view(vec3 eye, vec3 lookat, vec3 upvec) {
-    //assumes that the center of the camera (lookat) is aligned with the negative z axis in
-    //view space. Based on gluLookAt man page
-    vec3 f = normalize(lookat - eye);
-    vec3 s = normalize(cross(f, upvec));
-    vec3 u = cross(s, f);
-    return mat4(
-        vec4(s, 0.0),
-        vec4(u, 0.0),
-        vec4(-f, 0.0),
-        vec4(0.0, 0.0, 0.0, 1)
-    );
-}
 
 vec3 makeNonParallelUpvec(vec3 vec)
 {
@@ -143,24 +130,43 @@ void makeUpAndRightVec(vec3 dir, float rollRad, out vec3 rolledRight, out vec3 r
 	float c = cos(rollRad);
 	float s = sin(rollRad);
 
-	rolledRight 	= right * c + up * s;
-	rolledUp 		= up * c - right * s;
+	rolledRight 	= right * c + up 	* s;
+	rolledUp 		= up 	* c - right * s;
 }
 
-mat4 m_view(vec3 eye, vec3 lookat, float roll) {
+
+mat4 m_view(vec3 eye, vec3 lookat, vec3 upvec)
+{
     //assumes that the center of the camera (lookat) is aligned with the negative z axis in
     //view space. Based on gluLookAt man page
-    vec3 dir = normalize(lookat - eye);
 	
-	//heres beginning of applying roll:
-	vec3 rolledRight, rolledUp;
-	makeUpAndRightVec(dir, roll, rolledRight, rolledUp);
+    vec3 forwardDir = normalize(lookat - eye);
+    vec3 rightDir 	= normalize(cross(forwardDir, upvec));
+    vec3 upDir 		= cross(rightDir, forwardDir);
 	
     return mat4(
-        vec4(rolledRight, 0.0),
-        vec4(rolledUp, 0.0),
-        vec4(-dir, 0.0),
-        vec4(0.0, 0.0, 0.0, 1)
+        vec4(rightDir, 		0.0),
+        vec4(upDir, 		0.0),
+        vec4(-forwardDir, 	0.0),
+        vec4(0.0, 0.0, 0.0, 1.0)
+    );
+}
+
+mat4 m_view(vec3 eye, vec3 lookat, float roll)
+{
+    //assumes that the center of the camera (lookat) is aligned with the negative z axis in
+    //view space. Based on gluLookAt man page
+	
+    vec3 forwardDir = normalize(lookat - eye);
+	
+	vec3 rolledRight, rolledUp;
+	makeUpAndRightVec(forwardDir, roll, rolledRight, rolledUp);
+	
+    return mat4(
+        vec4(rolledRight, 	0.0),
+        vec4(rolledUp, 		0.0),
+        vec4(-forwardDir, 	0.0),
+        vec4(0.0, 0.0, 0.0, 1.0)
     );
 }
 vec3 inv_mdl_trans(vec3 point, vec3 trans, vec4 rot, vec3 scale)
