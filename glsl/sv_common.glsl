@@ -6,6 +6,7 @@ uniform ivec4 	control;
 // PREPROCESSOR STUFF //
 //**********************
 #define PI 3.14159265359
+#define RAD_IN_DEG 0.0174533
 #define SV_SHOWAXES
 #define VECTORIZE_V2(f) vec2 f(vec2 v){ return vec2(f(v.x), f(v.y)); 					}
 #define VECTORIZE_V3(f) vec3 f(vec3 v){ return vec3(f(v.x), f(v.y), f(v.z)); 			}

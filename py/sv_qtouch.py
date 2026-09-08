@@ -35,6 +35,7 @@ class UsedOpNames:
 	DatWithQtouchVec4Vars = "qtouch_vardata"
 	DatWithQtouchVec4Vars_Temp = "qtouch_vardata_tmp"
 	TcpIpDat = "qtouch_tcpip_connection"
+	DatWithConnectionState = "qtouch_connection_state"
 	DatWithGLSLFilesToParse = "sup_glsl_files"
 
 class QTouchTcpConnection:
@@ -45,13 +46,18 @@ class QTouchTcpConnection:
 		self.packetHandlers[PacketType.TreeData] = partial(self.processTreeDataPacket, with_var_names = False)
 		self.packetHandlers[PacketType.TreeDataWithVarNames] = partial(self.processTreeDataPacket, with_var_names = True)
 		self.packetHandlers[PacketType.PresetsExport] = self.processExample
+		
+		self.clientsConnected = 0
 
 	######################################
 	# MIRRORING METHODS FROM TD TCP DAT: #
 	######################################
 
 	def onConnect(self, dat, peer):
-		print("QTouchTcpConnection: connected")
+		self.clientsConnected += 1
+		self.update_dat_with_connection_state()
+		
+		print(f"QTouchTcpConnection: connected, clientsConnected={self.clientsConnected}")
 		self.buffer.clear()
 		return
 
@@ -66,7 +72,10 @@ class QTouchTcpConnection:
 		return
 
 	def onClose(self, dat, peer):
-		print("QTouchTcpConnection: closed")
+		self.clientsConnected = max(0, self.clientsConnected-1)
+		self.update_dat_with_connection_state()
+		
+		print(f"QTouchTcpConnection: disconnected, clientsConnected={self.clientsConnected}")
 		self.buffer.clear()
 		return
 
@@ -94,9 +103,39 @@ class QTouchTcpConnection:
 		
 		print(f"send_load_glsl_packet: sent for: {glsl_filepaths}\n{packet}")
 
+
+	def connection_status_string(self):
+		tcp_op = sv.proj_op(UsedOpNames.TcpIpDat)
+		assert(tcp_op)
+		
+		is_active = tcp_op.par.active
+		is_server = tcp_op.par.mode == "server"
+		port = tcp_op.par.port
+		numClients = self.clientsConnected
+		
+		if not is_active:
+			return f"Connection not active!"
+		
+		if not is_server:
+			return f"Mode is not 'server', its '{tcp_op.par.mode}'!"
+		
+		if numClients == 0:
+			return f"Waiting for connection on port {port}"
+		elif numClients == 1:
+			return f"Client connected on port {port}"
+		else:
+			return f"Client (actually {numClients} clients) connected on port {port}"
+				
+
 	##############
 	# INTERNALS: #
 	##############
+
+	def update_dat_with_connection_state(self):
+		connstate_op = sv.proj_op(UsedOpNames.DatWithConnectionState)
+		assert(connstate_op)
+		connstate_op['clientCount', 1] = self.clientsConnected
+		connstate_op['stateInfo', 1] = self.connection_status_string()
 
 	def send_bytes(self, the_bytes):
 		tcp_op = sv.proj_op(UsedOpNames.TcpIpDat)
@@ -275,7 +314,7 @@ class QTouchTcpConnection:
 		# <SAVE VAR DATA AND FORM FINAL TABLE> #
 		########################################
 		
-		assert op_varnames.numRows == packet.total_entries #variables count
+		assert op_varnames.numRows == packet.total_entries, f" existing varnames {op_varnames.numRows} != packet entries count {packet.total_entries}"
 		
 		new_vardata_rows = []
 		for i in range(len(packet.vec4_values)):
