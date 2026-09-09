@@ -159,7 +159,7 @@ class QTouchTcpConnection:
 		if len(self.buffer) < packetSize:
 			return False
 			
-		print(f"Handling packet of type {packetType}")
+		print(f"Handling packet of type {packetType} and size {packetSize}")
 			
 		contentSize = packetSize - HEADER_SIZE
 		
@@ -286,7 +286,7 @@ class QTouchTcpConnection:
 	def processTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
 		packet: TreeDataWithVarNamesPacketContent = self.parseTreeDataPacket(contentBlock, with_var_names)
 		
-		print(f"parseTreeDataPacket result is: {packet}")
+		#print(f"parseTreeDataPacket result is: {packet}")
 		
 		op_varnames = sv.proj_op(UsedOpNames.DatWithVarNames)
 		assert op_varnames
