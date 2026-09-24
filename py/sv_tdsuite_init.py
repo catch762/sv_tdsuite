@@ -22,6 +22,10 @@
 	you can do it with simpler command:
 	
 		op('/sv_tdsuite_init').module.init()
+	
+	Or run specific subcommand, for example if you added new GLSL file to lib:
+	
+		op('/sv_tdsuite_init').module.add_glsl_dat_nodes()
 
 """
 
@@ -70,7 +74,7 @@ def add_python_dat_nodes():
 
 def add_glsl_dat_nodes():
 	glsl_module_names = [
-		"sv_common", "sv_sdfcommon", "sv_sdfinterm", "sv_sup", "sv_iqn"
+		"sv_common", "sv_sdfcommon", "sv_sdfinterm", "sv_sup", "sv_iqn", "sv_lighting"
 	]
 	
 	for index, name in enumerate(glsl_module_names):

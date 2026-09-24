@@ -13,6 +13,10 @@ uniform ivec4 	control;
 #define VECTORIZE_V4(f) vec4 f(vec4 v){ return vec4(f(v.x), f(v.y), f(v.z), f(v.w)); 	}
 #define VECTORIZE(f) 	VECTORIZE_V2(f) VECTORIZE_V3(f) VECTORIZE_V4(f)
 
+#define GETBIT(bit) int(1 << (bit))
+#define TESTBIT(theint, bit) bool((theint) & (1 << (bit)))
+#define TESTFLAG(what, flagsToTest) bool(((what) & (flagsToTest)) == (flagsToTest))
+
 //********************
 // COMMON FUNCTIONS //
 //********************
