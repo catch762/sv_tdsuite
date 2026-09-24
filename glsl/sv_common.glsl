@@ -763,3 +763,14 @@ ivec3 to_cellspace(vec3 p, vec3 cellsize, out vec3 cellcoord01)
     cellcoord01 = vec3(x_coord01, y_coord01, z_coord01);
     return ivec3(x_idx, y_idx, z_idx);
 }
+
+
+vec3 Tonemap_ACES(vec3 x)
+{
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return (x * (a * x + b)) / (x * (c * x + d) + e);
+}
