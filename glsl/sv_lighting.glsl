@@ -64,7 +64,7 @@ vec3 bpm_lighting(vec3 normal, vec3 raydir, vec3 lightdir, vec3 lightcolor, BPM 
 //****************************************************************************
 
 #define STRMETA_Light(V,N) STRMAIN_ARG4(Light,V,N,	\
-vec4, 	pos,			ui("lims=s11")				\
+vec4, 	pos,			ui("lims=[-1,-1,0]")				\
 float, 	radius,			ui("lims=[0.5, 2, 2]")		\
 vec4, 	color,			ui("color = []")			\
 float, 	intensity01)	ui("lims=[0, 25, 5]")

@@ -9,9 +9,23 @@ const float SDF_EPSILON         = 0.000001;
 
 bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 
-//************
-// MATERIAL //
-//************
+
+//**********************
+//	MATERIAL SECTION
+//**********************
+#ifndef SDFINTERM_MATERIAL_SECTION
+
+//*************************************************************************************
+// The material struct is not defined here. It should be defined in the actual project.
+// It should look like:
+//
+// 	struct MyProjectMaterial {
+//		float dist; //the only mandatory field
+//	}
+//
+// Then you just pass this type name to macros below to generate additional functions.
+// All macros refer to this type as 'MT'.
+//*************************************************************************************
 
 #define SOP_ADD 0
 #define SOP_SUB 1
@@ -19,33 +33,35 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 #define SOP_A 3
 #define SOP_B 4
 
-#define DECL_SOPUNI(T) 		T sop_uni(T A, T B) { return A.dist < B.dist ? A : B; }
-#define DECL_SOPSUB(T) 		T sop_sub(T A, T B) { A.dist = sop_sub(A.dist, B.dist); return A; }
-#define DECL_SOPINT(T) 		T sop_int(T A, T B) { return A.dist > B.dist ? A : B; }
-#define DECL_SOPUNI_SM(T) 	T sop_uni_sm(T A, T B, float k) {float d = sop_uni_sm(A.dist,B.dist,k);if(A.dist<B.dist){A.dist=d;return A;}else{B.dist=d;return B;}}
-#define DECL_SOPINT_SM(T) 	T sop_int_sm(T A, T B, float k) {float d = sop_int_sm(A.dist,B.dist,k);if(A.dist>B.dist){A.dist=d;return A;}else{B.dist=d;return B;}}
-#define DECL_SOPSUB_SM(T) 	T sop_sub_sm(T A, T B, float k) {float d = sop_sub_sm(A.dist,B.dist,k);A.dist=d;return A;}
-#define DECL_MULTIOP_SM(T) T sop_multiop_sm(T A, T B, int sop_type, float K){	\
+#define DECL_SOPUNI(MT) 		MT sop_uni(MT A, MT B) { return A.dist < B.dist ? A : B; }
+#define DECL_SOPSUB(MT) 		MT sop_sub(MT A, MT B) { A.dist = sop_sub(A.dist, B.dist); return A; }
+#define DECL_SOPINT(MT) 		MT sop_int(MT A, MT B) { return A.dist > B.dist ? A : B; }
+#define DECL_SOPUNI_SM(MT) 	MT sop_uni_sm(MT A, MT B, float k) {float d = sop_uni_sm(A.dist,B.dist,k);if(A.dist<B.dist){A.dist=d;return A;}else{B.dist=d;return B;}}
+#define DECL_SOPINT_SM(MT) 	MT sop_int_sm(MT A, MT B, float k) {float d = sop_int_sm(A.dist,B.dist,k);if(A.dist>B.dist){A.dist=d;return A;}else{B.dist=d;return B;}}
+#define DECL_SOPSUB_SM(MT) 	MT sop_sub_sm(MT A, MT B, float k) {float d = sop_sub_sm(A.dist,B.dist,k);A.dist=d;return A;}
+
+//todo surely can remove ifs?
+#define DECL_MULTIOP_SM(MT) MT sop_multiop_sm(MT A, MT B, int sop_type, float K){	\
 	if 		(sop_type == SOP_ADD) return sop_uni_sm(A,B,K);						\
 	else if (sop_type == SOP_SUB) return sop_sub_sm(A,B,K);						\
 	else if (sop_type == SOP_INT) return sop_int_sm(A,B,K);						\
 	else if (sop_type == SOP_A)   return A;										\
 	else 						  return B;}
 
-#define DECL_SOPS(T) 		DECL_SOPUNI(T) DECL_SOPSUB(T) DECL_SOPINT(T) DECL_SOPUNI_SM(T) DECL_SOPINT_SM(T) DECL_SOPSUB_SM(T) DECL_MULTIOP_SM(T)
+#define DECL_SOPS(MT) 		DECL_SOPUNI(MT) DECL_SOPSUB(MT) DECL_SOPINT(MT) DECL_SOPUNI_SM(MT) DECL_SOPINT_SM(MT) DECL_SOPSUB_SM(MT) DECL_MULTIOP_SM(MT)
 
-#define DECL_MATERIAL(T)  	M_ATCONSTR(T) DECL_SOPS(T)
-#define M_ATCONSTR(T) 		T T ## _at(float dist){ T mat; mat.dist = dist; return mat;} 
+#define M_ATCONSTR(MT) 		MT MT ## _at(float dist){ MT mat; mat.dist = dist; return mat;} 
+#define DECL_MATERIAL(MT)  	M_ATCONSTR(MT) DECL_SOPS(MT)
 
-#define DECL_MARCH(T, NAME)	T NAME##_march(Ray ray, float start, float end) {	\
+#define DECL_MARCH(MT, NAME)	MT NAME##_march(Ray ray, float start, float end) {	\
 	float depth = start;														\
     for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {								\
-        T mat = NAME(walkray(ray, depth));										\
+        MT mat = NAME(walkray(ray, depth));										\
         if (mat.dist < SDF_EPSILON) {mat.dist = depth;return mat;}				\
         depth += mat.dist;														\
-        if (depth >= end) return T##_at(end);									\
+        if (depth >= end) return MT##_at(end);									\
     }																			\
-    return T##_at(end);															\
+    return MT##_at(end);															\
 }
 #define DECL_NORMAL(NAME)	vec3 NAME##_normal(vec3 p){			\
     vec2 	e = vec2(1.0,-1.0)*SDF_EPSILON;						\
@@ -55,33 +71,22 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 	float 	d = NAME(p + e.xxx).dist;							\
 	return 	normalize(a*e.xyy + b*e.yyx + c*e.yxy + d*e.xxx);	\
 }
-#define DECL_NORM_MARCH(T, NAME) DECL_MARCH(T, NAME) DECL_NORMAL(NAME)
+#define DECL_NORM_MARCH(MT, NAME) DECL_MARCH(MT, NAME) DECL_NORMAL(NAME)
 
+#endif
+
+
+//**********************
+//	EXAMPLE SECTION
+//**********************
+#ifndef SDFINTERM_EXAMPLE_SECTION
 struct M1
 {
 	float dist;
 };
 DECL_MATERIAL(M1)
 
-/*M1 UNUSED_example_march(Ray ray, float start, float end) {
-	float depth = start;
-    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {
-        M1 mat = example(walkray(ray, depth));
-        if (mat.dist < SDF_EPSILON) {mat.dist = depth;return mat;}
-        depth += mat.dist;
-        if (depth >= end) return M1_at(end);
-    }
-    return M1_at(end);
-}
-vec3 UNUSED_example_normal(vec3 p){
-    vec2 	e = vec2(1.0,-1.0)*SDF_EPSILON;
-	float 	a = example(p + e.xyy).dist;
-	float 	b = example(p + e.yyx).dist;
-	float 	c = example(p + e.yxy).dist;
-	float 	d = example(p + e.xxx).dist;
-	return 	normalize(a*e.xyy + b*e.yyx + c*e.yxy + d*e.xxx);
-}*/
-M1 example(vec3 p)
+M1 sdf_example(vec3 p)
 {
 	p = sop_repl(p, vec3(2));
 	
@@ -90,11 +95,12 @@ M1 example(vec3 p)
 	
 	return sop_int(a, b);
 }
-DECL_NORM_MARCH(M1, example)
+DECL_NORM_MARCH(M1, sdf_example)
 
-vec4 example_main(Ray ray, vec4 pix_ndc)
+vec4 example_main(Ray ray)
 {
-    M1    	mat     = example_march(ray, SDF_MIN_DIST, SDF_MAX_DIST);
+	//this func made by macro
+    M1    	mat     = sdf_example_march(ray, SDF_MIN_DIST, SDF_MAX_DIST);
     float   dist    = mat.dist;    
     vec3    p   	= walkray(ray, dist);
    
@@ -102,22 +108,27 @@ vec4 example_main(Ray ray, vec4 pix_ndc)
     {
 		return vec4(0);
     }
-     
-    vec3    n       = example_normal(p);
+	
+    //this func made by macro
+    vec3    n       = sdf_example_normal(p);
 	
 	return vec4(nsin01(n + p - n * p), 1);
 }
-/*vec4 example_master(vec4 pix_ndc)
+
+vec4 example_master(vec4 pix_ndc)
 {
-	vec3    eye         = rmt_camera.xyz;
+	vec3    eye         = vec3(1,1,1);
 	vec3 	lookat		= vec3(0,0,0);
-	vec3    dir         = ray_dir(45.0 * rmt_camera.w, agn_resolution(), pix_ndc.xy);
+	vec3    dir         = ray_dir(55.0, agn_resolution(), pix_ndc.xy);
 	vec3    dir_world   = ( m_view(eye,lookat,vec3(0,1,0)) * vec4(dir,0) ).xyz; //todo upvec?
 	
-	return example_main(Ray(eye, dir_world), pix_ndc);
-}*/
+	return example_main(Ray(eye, dir_world));
+}
 
-//////////////////////////
+#endif
+
+
+//Uncategorized utils, idk
 
 mat4 m_persp(float fovy, float aspect, float zNear, float zFar)
 {
