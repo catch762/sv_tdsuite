@@ -79,8 +79,10 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
     return MT##_at(end);															\
 }
 
+#define GET_HIT11_FUNC_NAME(SDFNAME) SDFNAME ## _march_gethit11
+
 //'hit11 value': if there is a hit, its [0.0 if was at start, 1.0 if was at end]. If no hit, then its -1.0
-#define DECL_MARCH_GETHIT11(NAME)	float NAME##_march_gethit11(Ray ray, float start, float end){\
+#define DECL_MARCH_GETHIT11(NAME)	float GET_HIT11_FUNC_NAME(NAME) (Ray ray, float start, float end){\
 	float depth = start;							\
     for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {	\
         float dist = NAME(walkray(ray, depth)).dist;\

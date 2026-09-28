@@ -5,7 +5,6 @@
 //				sv_sup
 //*****************************
 
-
 //*************************************************
 // Part 1: Actual Blinn-phong material and lighting
 //*************************************************
@@ -64,7 +63,7 @@ vec3 bpm_lighting(vec3 normal, vec3 raydir, vec3 lightdir, vec3 lightcolor, BPM 
 //****************************************************************************
 
 #define STRMETA_Light(V,N) STRMAIN_ARG4(Light,V,N,	\
-vec4, 	pos,			ui("lims=[-1,-1,0]")				\
+vec4, 	pos,			ui("lims=[-1,1,0]")				\
 float, 	radius,			ui("lims=[0.5, 2, 2]")		\
 vec4, 	color,			ui("color = []")			\
 float, 	intensity01)	ui("lims=[0, 25, 5]")
@@ -92,6 +91,32 @@ float getObstacleFactoredLight01(float hit11_toObstacle, vec2 obstacleLightModRa
 	
 	return mix(light01_for_no_hit, light01_for_hit, zero_if_no_hit_one_if_hit);
 }
+
+
+
+//see DECL_MARCH_GETHIT11 in sv_sdfinterm for first function
+#define MAKE_LIGHTCONTRIBUTION_FUNC(SDFNAME, SHADOWS_ENABLED_FLAG) 							\
+	vec3 SDFNAME ## _getlightcontribution_withshadow(Light light, vec3 p, 					\
+	vec3 n, vec3 raydir, BPM bpm, vec2 obstacleLightModRange01)								\
+	{																						\
+		float rangeintensity  = lightintensity_rangefactor(light, p);						\
+		if (rangeintensity < 0.00001) return vec3(0);										\
+																							\
+		vec3 dir2light = normalize(mulw(light.pos)-p);										\
+		Ray ray = Ray(p, dir2light);														\
+																							\
+		float obstacleFactor01 = 1.0; /* 0 full shadow, 1 no shadow */						\
+																							\
+		if(SHADOWS_ENABLED_FLAG == 1)														\
+		{																					\
+			float hit11 = GET_HIT11_FUNC_NAME(SDFNAME) (									\
+				ray,mindist(),distance(ray.origin, mulw(light.pos)));						\
+			obstacleFactor01 = getObstacleFactoredLight01(hit11, obstacleLightModRange01);	\
+		}																					\
+																							\
+		return obstacleFactor01 * 															\
+			bpm_lighting(n, raydir, dir2light, mulw(light.color) * rangeintensity, bpm);	\
+	}
 
 //************************************************
 // Part 3: Just some collections of some materials
