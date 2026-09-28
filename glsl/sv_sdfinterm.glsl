@@ -79,6 +79,19 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
     return MT##_at(end);															\
 }
 
+//'hit11 value': if there is a hit, its [0.0 if was at start, 1.0 if was at end]. If no hit, then its -1.0
+#define DECL_MARCH_GETHIT11(NAME)	float NAME##_march_gethit11(Ray ray, float start, float end){\
+	float depth = start;							\
+    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {	\
+        float dist = NAME(walkray(ray, depth)).dist;\
+        if (dist < SDF_EPSILON) 					\
+		{return clampphase(depth, start, end);}\
+        depth += dist;								\
+        if (depth >= end) break;					\
+    }												\
+    return -1.0;									\
+}
+
 #define DECL_NORMAL(NAME)	vec3 NAME##_normal(vec3 p){			\
     vec2 	e = vec2(1.0,-1.0)*SDF_EPSILON;						\
 	float 	a = NAME(p + e.xyy).dist;							\
@@ -87,7 +100,7 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 	float 	d = NAME(p + e.xxx).dist;							\
 	return 	normalize(a*e.xyy + b*e.yyx + c*e.yxy + d*e.xxx);	\
 }
-#define DECL_NORM_MARCH(MT, NAME) DECL_MARCH(MT, NAME) DECL_MARCH_WITH_STEP01(MT, NAME) DECL_NORMAL(NAME)
+#define DECL_NORM_MARCH(MT, NAME) DECL_MARCH(MT, NAME) DECL_NORMAL(NAME)
 
 #endif
 

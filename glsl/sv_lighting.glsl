@@ -76,6 +76,22 @@ float lightintensity_rangefactor(Light light, vec3 p)
 	return rangefactor01 * rangefactor01 * light.intensity01;
 }	
 
+//'hit11 value': if there is a hit, its [0.0 if was at start, 1.0 if was at end]. If no hit, then its -1.0
+//'obstacleLightModRange': 	x is light01 when obstacle is at the light source (hit11 = 0)
+//							y is light01 when obstacle is at the light destination (hit11 = 1)
+float getObstacleFactoredLight01(float hit11_toObstacle, vec2 obstacleLightModRange01)
+{
+	//We return this if hit11_toObstacle = [0, 1] (there was obstacle somewhere)
+	float light01_for_hit = mix(obstacleLightModRange01.x, obstacleLightModRange01.y, hit11_toObstacle);
+	
+	//We return this if hit11_toObstacle = -1 (there was no shadow, so full brightness)
+	float light01_for_no_hit = 1.0;
+	
+	//Branchless if selector
+	float zero_if_no_hit_one_if_hit = sign(hit11_toObstacle + 0.5) * 0.5 + 0.5;
+	
+	return mix(light01_for_no_hit, light01_for_hit, zero_if_no_hit_one_if_hit);
+}
 
 //************************************************
 // Part 3: Just some collections of some materials
