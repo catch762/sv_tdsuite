@@ -198,8 +198,7 @@ vec4 samplefold_11(sampler2D tex, vec2 ndc11)
 }
 float clampphase(float val, float begin, float end)
 {
-    if (val < begin)   return 0;
-    if (val > end)     return 1;
+    val = clamp(val, begin, end);
     return (val - begin) / (end - begin);
 }
 float cyclephase(float val, float cyclesize, int cycleidx)

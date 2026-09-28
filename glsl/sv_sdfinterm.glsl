@@ -54,15 +54,31 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 #define DECL_MATERIAL(MT)  	M_ATCONSTR(MT) DECL_SOPS(MT)
 
 #define DECL_MARCH(MT, NAME)	MT NAME##_march(Ray ray, float start, float end) {	\
-	float depth = start;														\
-    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {								\
-        MT mat = NAME(walkray(ray, depth));										\
-        if (mat.dist < SDF_EPSILON) {mat.dist = depth;return mat;}				\
-        depth += mat.dist;														\
-        if (depth >= end) return MT##_at(end);									\
-    }																			\
+	float depth = start;															\
+    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {									\
+        MT mat = NAME(walkray(ray, depth));											\
+        if (mat.dist < SDF_EPSILON) 												\
+		{mat.dist = depth;return mat;}												\
+        depth += mat.dist;															\
+        if (depth >= end) break;													\
+    }																				\
     return MT##_at(end);															\
 }
+
+//step01: how many steps we travelled
+#define DECL_MARCH_WITH_STEP01(MT, NAME)	MT NAME##_march(Ray ray, float start, float end, out float step01) {\
+	float depth = start;															\
+    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {									\
+        MT mat = NAME(walkray(ray, depth));											\
+        if (mat.dist < SDF_EPSILON)													\
+		{step01 = i / float(SDF_MAX_MARCH_STEPS-1);mat.dist = depth;return mat;}	\
+        depth += mat.dist;															\
+        if (depth >= end) break;													\
+    }																				\
+	step01 = 1.0;																	\
+    return MT##_at(end);															\
+}
+
 #define DECL_NORMAL(NAME)	vec3 NAME##_normal(vec3 p){			\
     vec2 	e = vec2(1.0,-1.0)*SDF_EPSILON;						\
 	float 	a = NAME(p + e.xyy).dist;							\
@@ -71,7 +87,7 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 	float 	d = NAME(p + e.xxx).dist;							\
 	return 	normalize(a*e.xyy + b*e.yyx + c*e.yxy + d*e.xxx);	\
 }
-#define DECL_NORM_MARCH(MT, NAME) DECL_MARCH(MT, NAME) DECL_NORMAL(NAME)
+#define DECL_NORM_MARCH(MT, NAME) DECL_MARCH(MT, NAME) DECL_MARCH_WITH_STEP01(MT, NAME) DECL_NORMAL(NAME)
 
 #endif
 
