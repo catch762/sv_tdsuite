@@ -314,7 +314,7 @@ class QTouchTcpConnection:
 		# <SAVE VAR DATA AND FORM FINAL TABLE> #
 		########################################
 		
-		assert op_varnames.numRows == packet.total_entries, f" existing varnames {op_varnames.numRows} != packet entries count {packet.total_entries}"
+		assert op_varnames.numRows == packet.total_entries, f" existing varnames [{op_varnames.numRows}] != packet entries count [{packet.total_entries}] ! packet varnames count [{len(packet.var_names)}]"
 		
 		new_vardata_rows = []
 		for i in range(len(packet.vec4_values)):

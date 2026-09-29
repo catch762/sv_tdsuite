@@ -16,6 +16,7 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 #ifndef SDFINTERM_MATERIAL_SECTION
 
 //*************************************************************************************
+//
 // The material struct is not defined here. It should be defined in the actual project.
 // It should look like:
 //
@@ -25,6 +26,10 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 //
 // Then you just pass this type name to macros below to generate additional functions.
 // All macros refer to this type as 'MT'.
+//
+// On additional note: macro parameter 'SDFFUNCNAME' implies function 
+// which takes 'vec3 p' and returns 'MT'.
+//
 //*************************************************************************************
 
 #define SOP_ADD 0
@@ -42,10 +47,10 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 
 //todo surely can remove ifs?
 #define DECL_MULTIOP_SM(MT) MT sop_multiop_sm(MT A, MT B, int sop_type, float K){	\
-	if 		(sop_type == SOP_ADD) return sop_uni_sm(A,B,K);						\
-	else if (sop_type == SOP_SUB) return sop_sub_sm(A,B,K);						\
-	else if (sop_type == SOP_INT) return sop_int_sm(A,B,K);						\
-	else if (sop_type == SOP_A)   return A;										\
+	if 		(sop_type == SOP_ADD) return sop_uni_sm(A,B,K);							\
+	else if (sop_type == SOP_SUB) return sop_sub_sm(A,B,K);							\
+	else if (sop_type == SOP_INT) return sop_int_sm(A,B,K);							\
+	else if (sop_type == SOP_A)   return A;											\
 	else 						  return B;}
 
 #define DECL_SOPS(MT) 		DECL_SOPUNI(MT) DECL_SOPSUB(MT) DECL_SOPINT(MT) DECL_SOPUNI_SM(MT) DECL_SOPINT_SM(MT) DECL_SOPSUB_SM(MT) DECL_MULTIOP_SM(MT)
@@ -53,56 +58,61 @@ bool sdf_beyondrange(float dist) {return dist > SDF_MAX_DIST - SDF_EPSILON;}
 #define M_ATCONSTR(MT) 		MT MT ## _at(float dist){ MT mat; mat.dist = dist; return mat;} 
 #define DECL_MATERIAL(MT)  	M_ATCONSTR(MT) DECL_SOPS(MT)
 
-#define DECL_MARCH(MT, NAME)	MT NAME##_march(Ray ray, float start, float end) {	\
-	float depth = start;															\
-    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {									\
-        MT mat = NAME(walkray(ray, depth));											\
-        if (mat.dist < SDF_EPSILON) 												\
-		{mat.dist = depth;return mat;}												\
-        depth += mat.dist;															\
-        if (depth >= end) break;													\
-    }																				\
-    return MT##_at(end);															\
-}
+#define DECL_MARCH(MT, SDFFUNCNAME)							\
+MT SDFFUNCNAME##_march(Ray ray, float start, float end) {	\
+		float depth = start;								\
+		for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {		\
+			MT mat = SDFFUNCNAME(walkray(ray, depth));		\
+			if (mat.dist < SDF_EPSILON) 					\
+			{mat.dist = depth;return mat;}					\
+			depth += mat.dist;								\
+			if (depth >= end) break;						\
+		}													\
+		return MT##_at(end);								\
+	}
 
 //step01: how many steps we travelled
-#define DECL_MARCH_WITH_STEP01(MT, NAME)	MT NAME##_march(Ray ray, float start, float end, out float step01) {\
-	float depth = start;															\
-    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {									\
-        MT mat = NAME(walkray(ray, depth));											\
-        if (mat.dist < SDF_EPSILON)													\
-		{step01 = i / float(SDF_MAX_MARCH_STEPS-1);mat.dist = depth;return mat;}	\
-        depth += mat.dist;															\
-        if (depth >= end) break;													\
-    }																				\
-	step01 = 1.0;																	\
-    return MT##_at(end);															\
-}
+#define DECL_MARCH_WITH_STEP01(MT, SDFFUNCNAME)											\
+MT SDFFUNCNAME##_march(Ray ray, float start, float end, out float step01) {				\
+		float depth = start;															\
+		for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {									\
+			MT mat = SDFFUNCNAME(walkray(ray, depth));									\
+			if (mat.dist < SDF_EPSILON)													\
+			{step01 = i / float(SDF_MAX_MARCH_STEPS-1);mat.dist = depth;return mat;}	\
+			depth += mat.dist;															\
+			if (depth >= end) break;													\
+		}																				\
+		step01 = 1.0;																	\
+		return MT##_at(end);															\
+	}
 
-#define GET_HIT11_FUNC_NAME(SDFNAME) SDFNAME ## _march_gethit11
+#define GET_HIT11_FUNC_NAME(SDFFUNCNAME) SDFFUNCNAME ## _march_gethit11
 
 //'hit11 value': if there is a hit, its [0.0 if was at start, 1.0 if was at end]. If no hit, then its -1.0
-#define DECL_MARCH_GETHIT11(NAME)	float GET_HIT11_FUNC_NAME(NAME) (Ray ray, float start, float end){\
-	float depth = start;							\
-    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {	\
-        float dist = NAME(walkray(ray, depth)).dist;\
-        if (dist < SDF_EPSILON) 					\
-		{return clampphase(depth, start, end);}\
-        depth += dist;								\
-        if (depth >= end) break;					\
-    }												\
-    return -1.0;									\
+#define DECL_MARCH_GETHIT11(SDFFUNCNAME)									\
+float GET_HIT11_FUNC_NAME(SDFFUNCNAME) (Ray ray, float start, float end){	\
+	float depth = start;													\
+    for (int i = 0; i < SDF_MAX_MARCH_STEPS; i++) {							\
+        float dist = SDFFUNCNAME(walkray(ray, depth)).dist;					\
+        if (dist < SDF_EPSILON) 											\
+		{return clampphase(depth, start, end);}								\
+        depth += dist;														\
+        if (depth >= end) break;											\
+    }																		\
+    return -1.0;															\
 }
 
-#define DECL_NORMAL(NAME)	vec3 NAME##_normal(vec3 p){			\
+#define DECL_NORMAL(SDFFUNCNAME)								\
+vec3 SDFFUNCNAME##_normal(vec3 p){								\
     vec2 	e = vec2(1.0,-1.0)*SDF_EPSILON;						\
-	float 	a = NAME(p + e.xyy).dist;							\
-	float 	b = NAME(p + e.yyx).dist;							\
-	float 	c = NAME(p + e.yxy).dist;							\
-	float 	d = NAME(p + e.xxx).dist;							\
+	float 	a = SDFFUNCNAME(p + e.xyy).dist;					\
+	float 	b = SDFFUNCNAME(p + e.yyx).dist;					\
+	float 	c = SDFFUNCNAME(p + e.yxy).dist;					\
+	float 	d = SDFFUNCNAME(p + e.xxx).dist;					\
 	return 	normalize(a*e.xyy + b*e.yyx + c*e.yxy + d*e.xxx);	\
 }
-#define DECL_NORM_MARCH(MT, NAME) DECL_MARCH(MT, NAME) DECL_NORMAL(NAME)
+
+#define DECL_NORM_MARCH(MT, SDFFUNCNAME) DECL_MARCH(MT, SDFFUNCNAME) DECL_NORMAL(SDFFUNCNAME)
 
 #endif
 

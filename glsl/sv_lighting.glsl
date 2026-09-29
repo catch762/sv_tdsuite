@@ -63,7 +63,7 @@ vec3 bpm_lighting(vec3 normal, vec3 raydir, vec3 lightdir, vec3 lightcolor, BPM 
 //****************************************************************************
 
 #define STRMETA_Light(V,N) STRMAIN_ARG4(Light,V,N,	\
-vec4, 	pos,			ui("lims=[-1,1,0]")				\
+vec4, 	pos,			ui("lims=[-1,1,0]")			\
 float, 	radius,			ui("lims=[0.5, 2, 2]")		\
 vec4, 	color,			ui("color = []")			\
 float, 	intensity01)	ui("lims=[0, 25, 5]")
@@ -75,6 +75,7 @@ float lightintensity_rangefactor(Light light, vec3 p)
 	return rangefactor01 * rangefactor01 * light.intensity01;
 }	
 
+//Function that calculates amount of shadow.
 //'hit11 value': if there is a hit, its [0.0 if was at start, 1.0 if was at end]. If no hit, then its -1.0
 //'obstacleLightModRange': 	x is light01 when obstacle is at the light source (hit11 = 0)
 //							y is light01 when obstacle is at the light destination (hit11 = 1)
@@ -93,10 +94,9 @@ float getObstacleFactoredLight01(float hit11_toObstacle, vec2 obstacleLightModRa
 }
 
 
-
 //see DECL_MARCH_GETHIT11 in sv_sdfinterm for first function
-#define MAKE_LIGHTCONTRIBUTION_FUNC(SDFNAME, SHADOWS_ENABLED_FLAG) 							\
-	vec3 SDFNAME ## _getlightcontribution_withshadow(Light light, vec3 p, 					\
+#define MAKE_LIGHTCONTRIBUTION_FUNC(SDF_FUNC_NAME, SHADOWS_ENABLED_FLAG) 					\
+	vec3 SDF_FUNC_NAME ## _getlightcontribution_withshadow(Light light, vec3 p, 			\
 	vec3 n, vec3 raydir, BPM bpm, vec2 obstacleLightModRange01)								\
 	{																						\
 		float rangeintensity  = lightintensity_rangefactor(light, p);						\
@@ -109,7 +109,7 @@ float getObstacleFactoredLight01(float hit11_toObstacle, vec2 obstacleLightModRa
 																							\
 		if(SHADOWS_ENABLED_FLAG == 1)														\
 		{																					\
-			float hit11 = GET_HIT11_FUNC_NAME(SDFNAME) (									\
+			float hit11 = GET_HIT11_FUNC_NAME(SDF_FUNC_NAME) (								\
 				ray,mindist(),distance(ray.origin, mulw(light.pos)));						\
 			obstacleFactor01 = getObstacleFactoredLight01(hit11, obstacleLightModRange01);	\
 		}																					\
@@ -117,6 +117,54 @@ float getObstacleFactoredLight01(float hit11_toObstacle, vec2 obstacleLightModRa
 		return obstacleFactor01 * 															\
 			bpm_lighting(n, raydir, dir2light, mulw(light.color) * rangeintensity, bpm);	\
 	}
+
+#define STRMETA_Lightgrid(V,N) STRMAIN_ARG3(Lightgrid,V,N,\
+vec4, 	cellsize,		ui("lims = [0, 1, 0.5]"	)\
+vec4, 	wiggleroom01,	ui("lims = [0, 1, 0]"	)\
+float, 	indivspacing01)	ui("lims = [0, 1, 1], tip = 'at 0 all cells will use same safe radius based on wiggleroom, at 1 it it will look at wiggled pos of each cell and see how much space left'")
+STRDECL(Lightgrid)
+
+vec3 lightcell_seed11(ivec3 idx)
+{
+    vec3 f = idx;
+    float a = nsin01(f.x * 0.68672 + f.y * 3.3234 - sin(f.z*4.1)*4.123,
+					 (lim_fold01(sin(f.x*9.1)+4.343243) + 1));
+	float b = nsin01(cos(f.y+2.5) - a + a*(f.z * 9.4211 + sin(a*0.43534 + f.x * 1.2323))); 
+	float c = nsin01(cos(b+2.5244) - a*(1+b) + a*(f.z * 7.4211 + sin(b*1.43534 + f.z * 3.2323))); 
+    
+    return n01_to_11(vec3(a,b,c));
+}
+
+vec3 get_light_pos_from_grid(vec3 p, Lightgrid lightgrid, ivec3 idx4seed_offset, out float lightradius)
+{
+	vec3 	cellsize 		= mulw(lightgrid.cellsize); 
+	vec3 	wiggleroom01 	= mulw(lightgrid.wiggleroom01);
+	
+    vec3    query_coord01   = vec3(0);
+    ivec3   query_idx       = to_cellspace(p, cellsize, query_coord01);
+    
+	vec3 	cell_seed11 	= lightcell_seed11(query_idx + idx4seed_offset);
+	
+	vec3 	wiggleRoom 		= wiggleroom01 * cellsize; //span, in both directions combined
+	
+	//Relative rom center of the cell
+	vec3 	wiggledPos 		= wiggleRoom * cell_seed11 * 0.5;
+	
+	//Absolute positions:
+	vec3 	cellCenter 		= cellsize * vec3(query_idx);	
+	vec3 	lightPos 		= cellCenter + wiggledPos;
+	
+	vec3 	corner 						= cellsize * 0.5;
+	vec3 	minDistsToEdges_Nominal 	= corner - wiggleRoom * 0.5;
+	vec3 	minDistsToEdges_Individual 	= corner - abs(wiggledPos);
+	vec3 	minDistsToEdges 			= mix(minDistsToEdges_Nominal, 
+											  minDistsToEdges_Individual, 
+											  lightgrid.indivspacing01);
+
+	lightradius = min(minDistsToEdges.x, min(minDistsToEdges.y, minDistsToEdges.z));
+	
+	return lightPos;
+}
 
 //************************************************
 // Part 3: Just some collections of some materials
