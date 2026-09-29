@@ -69,11 +69,21 @@ vec4, 	color,			ui("color = []")			\
 float, 	intensity01)	ui("lims=[0, 25, 5]")
 STRDECL(Light)
 
+float light_rangefactor(vec3 lightpos, float lightradius, vec3 p)
+{
+	float   rangefactor01   = 1.0 - clamp01(distance(lightpos, p) / lightradius);
+	return rangefactor01 * rangefactor01;
+}
 float lightintensity_rangefactor(Light light, vec3 p)
 {
-	float   rangefactor01   = 1.0 - clamp01(distance(mulw(light.pos), p) / light.radius);
-	return rangefactor01 * rangefactor01 * light.intensity01;
+	return light_rangefactor(mulw(light.pos), light.radius, p) * light.intensity01;
 }	
+
+//at 90 degrees and beyond, returns 0. At 0 degrees returns 1.
+float directionFactor01(vec3 normal, vec3 dir2light)
+{
+	return clamp(dot(normalize(normal), normalize(dir2light)), 0.0, 1.0);
+}
 
 //Function that calculates amount of shadow.
 //'hit11 value': if there is a hit, its [0.0 if was at start, 1.0 if was at end]. If no hit, then its -1.0

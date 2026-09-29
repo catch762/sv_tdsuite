@@ -201,6 +201,11 @@ vec3 	ray_dir		(float Y_fov_degrees, vec2 resolution, vec2 pixel_coord) {
     return 	normalize(vec3(xy, -z));
 }
 
+vec3 	ray_dir(float Y_fov_degrees)
+{
+	return ray_dir(Y_fov_degrees, agn_resolution(), gl_FragCoord.xy);
+}
+
 Ray worldray_for_pixel(vec2 pixCoord, vec2 resolution, vec3 eye, vec3 lookat, float fov)
 {
 	vec3    dir         = ray_dir(fov, resolution, pixCoord);
