@@ -85,6 +85,19 @@ float directionFactor01(vec3 normal, vec3 dir2light)
 	return clamp(dot(normalize(normal), normalize(dir2light)), 0.0, 1.0);
 }
 
+
+float simpleLight01(vec3 point, vec3 lightpos, float lightradius, float lightintensity, vec3 normal)
+{
+	vec3 dir2light 	= normalize(lightpos - point);
+	
+	float rangefactor01 = light_rangefactor(lightpos, lightradius, point);
+	
+	float dirfactor01 	= directionFactor01(normal, dir2light);
+	
+	float light01 = rangefactor01 * dirfactor01 * lightintensity;
+	return light01;
+}
+
 //Function that calculates amount of shadow.
 //'hit11 value': if there is a hit, its [0.0 if was at start, 1.0 if was at end]. If no hit, then its -1.0
 //'obstacleLightModRange': 	x is light01 when obstacle is at the light source (hit11 = 0)
