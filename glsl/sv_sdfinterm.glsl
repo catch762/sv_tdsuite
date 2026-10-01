@@ -1,9 +1,9 @@
 //***********************************
 // THIS WILL MOVE TO COMMON LATER  //
 //***********************************
-const int   SDF_MAX_MARCH_STEPS = 1000;
+const int   SDF_MAX_MARCH_STEPS = 700;
 const float SDF_MIN_DIST        = 0.0001;
-const float SDF_MAX_DIST        = 12.5; //2.5 
+const float SDF_MAX_DIST        = 6; //2.5 * root5 = 12.5 
 const float SDF_OUTSIDE         = SDF_MAX_DIST + 1;
 const float SDF_EPSILON         = 0.000001;
 
