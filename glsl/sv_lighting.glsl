@@ -62,11 +62,10 @@ vec3 bpm_lighting(vec3 normal, vec3 raydir, vec3 lightdir, vec3 lightcolor, BPM 
 // Part 2: Some common code for lighting. Controversial and subject to change.
 //****************************************************************************
 
-#define STRMETA_Light(V,N) STRMAIN_ARG4(Light,V,N,	\
-vec4, 	pos,			ui("lims=[-1,1,0]")			\
-float, 	radius,			ui("lims=[0.5, 2, 2]")		\
-vec4, 	color,			ui("color = []")			\
-float, 	intensity01)	ui("lims=[0, 25, 5]")
+#define STRMETA_Light(V,N) STRMAIN_ARG3(Light,V,N,							\
+vec4, 	pos,			ui("lims=[[-1,1,0], [-1,1,0], [-1,1,0], [-1,1,1]]")	\
+vec2, 	RadiusIntensity,ui("lims=[[0.5, 2, 2], [0, 25, 5]]")				\
+vec4, 	color)			ui("color = []")
 STRDECL(Light)
 
 float light_rangefactor(vec3 lightpos, float lightradius, vec3 p)
@@ -76,7 +75,7 @@ float light_rangefactor(vec3 lightpos, float lightradius, vec3 p)
 }
 float lightintensity_rangefactor(Light light, vec3 p)
 {
-	return light_rangefactor(mulw(light.pos), light.radius, p) * light.intensity01;
+	return light_rangefactor(mulw(light.pos), light.RadiusIntensity.x, p) * light.RadiusIntensity.y;
 }	
 
 //at 90 degrees and beyond, returns 0. At 0 degrees returns 1.

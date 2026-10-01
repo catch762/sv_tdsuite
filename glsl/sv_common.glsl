@@ -773,3 +773,16 @@ vec3 Tonemap_ACES(vec3 x)
     const float e = 0.14;
     return (x * (a * x + b)) / (x * (c * x + d) + e);
 }
+
+float sum(vec2 v)
+{
+	return v.x + v.y;
+}
+float sum(vec3 v)
+{
+	return v.x + v.y + v.z;
+}
+float sum(vec4 v)
+{
+	return v.x + v.y + v.z + v.w;
+}

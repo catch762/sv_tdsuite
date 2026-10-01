@@ -13,6 +13,7 @@ class PacketType(IntEnum):
 	TreeDataWithVarNames = 1
 	PresetsExport = 2
 	LoadGlslFiles = 3
+	RequestGlslFiles = 4
 	
 PacketTypeInt = int
 HEADER_SIZE = 8
@@ -46,6 +47,7 @@ class QTouchTcpConnection:
 		self.packetHandlers[PacketType.TreeData] = partial(self.processTreeDataPacket, with_var_names = False)
 		self.packetHandlers[PacketType.TreeDataWithVarNames] = partial(self.processTreeDataPacket, with_var_names = True)
 		self.packetHandlers[PacketType.PresetsExport] = self.processExample
+		self.packetHandlers[PacketType.RequestGlslFiles] = self.onGlslFilesRequested
 		
 		self.clientsConnected = 0
 
@@ -342,6 +344,8 @@ class QTouchTcpConnection:
 		
 		print("processTreeDataPacket finished.") 
 	
+	def onGlslFilesRequested(self, unusedContentBlock):
+		self.send_load_glsl_packet()
 	
 	############################
 	# PACKETS MAKER FUNCTIONS: #
