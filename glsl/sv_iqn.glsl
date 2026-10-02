@@ -3,7 +3,7 @@
 //********************
 
 #define IQN_ONLY_ADD 0
-#define IQN_SWITCH_ADD_SUB 1
+#define IQN_SWITCH_ADD_SUB 0
 #define IQN_ONLY_SHROT 1
 
 //Note: some functions use 'vec4 idx', where XYZ is 3d grid index and W is octavedepth01
@@ -321,7 +321,6 @@ vec2 iqn_master(	vec3 			p,
         if (bool(IQN_ONLY_ADD) || mode == 1) //smooth union
 		{
 			cur_octid 	= nextdist < curdist ? i : prev_octid;
-			prev_octid 	= cur_octid;
 			
 			curdist    	= sop_uni_sm  	(curdist, nextdist, curscale * SM_K_MAINOP);	
 		}
@@ -332,6 +331,7 @@ vec2 iqn_master(	vec3 			p,
 		
         p               = iqn_OctaveTransformOperation(p, octop_id, prm_octop, octscalemod);
 		
+		prev_octid 		= cur_octid;
         curscale        *= octscalemod;		
 		neighborhood 	*= NeighbOctmod.y;
 		
