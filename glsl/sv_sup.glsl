@@ -45,25 +45,25 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 
 //Simple standard declaration of structs and its members.
 //'u' stands for unused;
-#define BEG_DECL(STRTYPE, u) 				struct STRTYPE {
-#define VAR_DECL(TYPE, NAME, u, u2)			TYPE NAME;
-#define END_DECL(STRTYPE, SIZE)				};
+#define BEG_DECLSTRUCT(STRTYPE, u) 						struct STRTYPE {
+#define VAR_DECLSTRUCT(TYPE, NAME, u, u2)					TYPE NAME;
+#define END_DECLSTRUCT(STRTYPE, SIZE)					};
 
 //Defines getter func for instance of some struct;
 //member variables are copied into instance
-#define BEG_GETR(STRTYPE, STRNAME) 			STRTYPE STRNAME(){STRTYPE res;
-#define VAR_GETR(u, NAME, STRNAME, u2)		res.NAME = STRNAME ## _ ## NAME();
-#define END_GETR(u, u2)						return res;}
+#define BEG_MAKESTRUCTINSTGETTER(STRTYPE, STRNAME) 		STRTYPE STRNAME(){STRTYPE res;
+#define VAR_MAKESTRUCTINSTGETTER(u, NAME, STRNAME, u2)		res.NAME = STRNAME ## _ ## NAME();
+#define END_MAKESTRUCTINSTGETTER(u, u2)					return res;}
 
 //Defines getter func for each individual member variable
-#define BEG_ALLC(u, u2)
-#define VAR_ALLC(TYPE, NAME, STRNAME, IDX)	TYPE STRNAME ## _ ## NAME(){ return sup_as_ ## TYPE(sup_data[__LINE__ + IDX - 1]); }
-#define END_ALLC(u, u2)
+#define BEG_MAKEMEMBERGETTERS(u, u2)
+#define VAR_MAKEMEMBERGETTERS(TYPE, NAME, STRNAME, IDX)	TYPE STRNAME ## _ ## NAME(){ return sup_as_ ## TYPE(sup_data[__LINE__ + IDX - 1]); }
+#define END_MAKEMEMBERGETTERS(u, u2)
 
 //Simply gets count of member variables.
-#define BEG_SIZE(u, u2)
-#define VAR_SIZE(u, u2, u3, u4)
-#define END_SIZE(u, SIZE) 					SIZE
+#define BEG_RETURNSSIZE(u, u2)
+#define VAR_RETURNSSIZE(u, u2, u3, u4)
+#define END_RETURNSSIZE(u, THESIZE) THESIZE
 
 //T: type of struct, V: macro version for pattern matching ('yourOperation' from example above),
 //N: name of struct, T0/N0 ...: are type/name pairs for struct members
@@ -113,7 +113,7 @@ SUP_VARS_END
 */
 
 #define GETMETA(STRTYPE) 		STRMETA_ ## STRTYPE
-#define GETSIZE(STRTYPE) 		INDR(GETMETA(STRTYPE)(SIZE, u))
+#define GETSIZE(STRTYPE) 		INDR(GETMETA(STRTYPE)(RETURNSSIZE, u))
 
 //These are the only macros you should use:
 //and you have to define STRMETA_yourstructtype(V,N) macro urself
@@ -121,9 +121,9 @@ SUP_VARS_END
 //C++ QTouchApp defines what can be contained in these ui("...") sections.
 //Its subject to change, im not even gonna describe current version.
 #define ui(data_for_cpp_to_parse) 
-#define STRDECL(STRTYPE) 		GETMETA(STRTYPE)(DECL, ~)
+#define STRDECL(STRTYPE) 		GETMETA(STRTYPE)(DECLSTRUCT, ~)
 #define VAR(T, N) T N(){ return sup_as_ ## T(sup_data[__LINE__ - 1]); }
-#define STR(STRTYPE, STRNAME) 	GETMETA(STRTYPE)(ALLC, STRNAME) GETMETA(STRTYPE)(GETR, STRNAME)
+#define STR(STRTYPE, STRNAME) 	GETMETA(STRTYPE)(MAKEMEMBERGETTERS, STRNAME) GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, STRNAME)
 //always use ooo after STR (its not needed for VAR cause 
 #define ooo(STRTYPE) 			__LINE__ + GETSIZE(STRTYPE) - 1
 //////////////////////////////////////////////////////////////////////////////////////////////
