@@ -14,14 +14,34 @@ ivec2 	sup_as_ivec2	(vec4 v) {return ivec2(v.xy + vec2(0.5));	}
 ivec3 	sup_as_ivec3	(vec4 v) {return ivec3(v.xyz + vec3(0.5));	}
 ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 
-#define SUP_PYTHON_BEGIN
-#define SUP_PYTHON_END
-#define SUP_VARS_BEGIN
-#define SUP_VARS_END
+//ADDTODICT section is declared entirely in /* comments */, so dont need defines, but anyways.
+//This section contains pseudo-python-looking code defining simple variables which can later be referenced
+//in ui("..."); this is parsed in C++ by QtouchApp 
+#define SUP_ADDTODICT_BEGIN
+#define SUP_ADDTODICT_END
+
+//Todo remove, its unused. C++ dont look for it. Dont need to define these sections, put decls anywhere
 #define SUP_STRUCTS_BEGIN
 #define SUP_STRUCTS_END
 
+//C++ QtouchApp looks for these tags, there has to be exactly one such section
+//containing all variables (of native types like vec4 and of types you declared with macros below)
+#define SUP_VARS_BEGIN
+#define SUP_VARS_END
+
 #define INDR(P) P
+
+//*************************************************************************
+// So, there is a struct, and we do various things with it.
+// As you can see below, all operations are defined by providing 3 macros:
+//
+// BEG_yourOperation(...) -- called once in beginning
+// VAR_yourOperation(...) -- called for each member variable of the struct
+// END_yourOperation(...) -- called once in the end
+// 
+// Then, you could say "i want 'yourOperation' done on struct type 'Kek'
+// and it would work.
+//*************************************************************************
 
 #define BEG_DECL(STRTYPE, u) 				struct STRTYPE {
 #define VAR_DECL(TYPE, NAME, u, u2)			TYPE NAME;
