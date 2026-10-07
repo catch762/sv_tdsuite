@@ -30,7 +30,57 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 #define SUP_VARS_END
 
 #define INDR(P) P
+#define EVAL(x) x
 
+//This exists because if you call SOME_MACRO(2+1), you wont get 3. You will get '2+1'.
+//Which would be fine, but you cant use it as part of variable name, for instance.
+//This problem is fixed with macro substitutions, enjoy this brilliant solution:
+
+#define PLUS_ONE_0 1
+#define PLUS_ONE_1 2
+#define PLUS_ONE_2 3
+#define PLUS_ONE_3 4
+#define PLUS_ONE_4 5
+#define PLUS_ONE_5 6
+#define PLUS_ONE_6 7
+#define PLUS_ONE_7 8
+#define PLUS_ONE_8 9
+#define PLUS_ONE_9 10
+#define PLUS_ONE_10 11
+#define PLUS_ONE_11 12
+#define PLUS_ONE_12 13
+#define PLUS_ONE_13 14
+#define PLUS_ONE_14 15
+#define PLUS_ONE_15 16
+
+#define MINUS_ONE_0 -1
+#define MINUS_ONE_1 0
+#define MINUS_ONE_2 1
+#define MINUS_ONE_3 2
+#define MINUS_ONE_4 3
+#define MINUS_ONE_5 4
+#define MINUS_ONE_6 5
+#define MINUS_ONE_7 6
+#define MINUS_ONE_8 7
+#define MINUS_ONE_9 8
+#define MINUS_ONE_10 9
+#define MINUS_ONE_11 10
+#define MINUS_ONE_12 11
+#define MINUS_ONE_13 12
+#define MINUS_ONE_14 13
+#define MINUS_ONE_15 14
+
+#define CAT_INNER(a, b) a ## b
+#define CAT(a, b) CAT_INNER(a, b)
+
+#define GET_PLUS_ONE(NUMBER) CAT(PLUS_ONE_, NUMBER)
+#define GET_MINUS_ONE(NUMBER) CAT(MINUS_ONE_, NUMBER)
+
+
+
+
+
+#ifndef SUP_SECTION_MACRO_OPERATIONS_ON_STRUCT_AND_ITS_MEMBERS
 //*************************************************************************
 // So, there is a struct, and we do various things with it.
 // As you can see below, all operations are defined by providing 3 macros:
@@ -39,16 +89,20 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 // MEM_yourOperation(...) -- called for each member variable of the struct
 // END_yourOperation(...) -- called once in the end
 // 
-// Then, you could say "i want 'yourOperation' done on struct type 'Kek'
+// Then, you could say: i want 'yourOperation' done on struct type 'Kek'
 // and it would work.
+//
+// See cases below. Lowercase args stand for unused.
+//
 //*************************************************************************
 
+
 //Simple standard declaration of structs and its members.
-//Lowercase args here and everywhere stand for unused
 #define BEG_DECLSTRUCT(STRTYPE, strname) 										struct STRTYPE {
 #define MEM_DECLSTRUCT(strtype, MEMBERTYPE, MEMBERNAME, strname, memberidx)			MEMBERTYPE MEMBERNAME;
 #define END_DECLSTRUCT(strtype, size)											};
 
+	//maybe use struct constructor instead?
 //Defines getter func for instance of some struct;
 //member variables are copied into instance
 	//here STRNAME is STRPATH
@@ -58,40 +112,20 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 
 
 
-
-
-
-
-
-
-
-//i stopped at: adding varidx and getting final idx here;
-//and also actually doing nested str path, makin STRNAME a path,, etc/
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Defines getter func for each individual member variable
 	//here STRNAME is STRPATH
 	//issue with index!
 #define BEG_MAKEMEMBERGETTERS(strtype, strname)
-#define MEM_MAKEMEMBERGETTERS(strtype, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	MEMBERTYPE STRNAME ## _ ## MEMBERNAME()\
-																					{ return sup_as_ ## MEMBERTYPE(sup_data[__LINE__ + IDX - 1]); }
+#define MEM_MAKEMEMBERGETTERS(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	MEMBERTYPE STRNAME ## _ ## MEMBERNAME()\
+																					{ return sup_as_ ## MEMBERTYPE(sup_data[SUP_DATA_FINAL_INDEX(CUR_VARIDX, STRTYPE, MEMBERIDX)]); }
 #define END_MAKEMEMBERGETTERS(strtype, size)
 
+
 //Simply gets count of member variables.
-#define BEG_RETURNSSIZE(u, u2)
-#define MEM_RETURNSSIZE(u, u2, u3, u4)
-#define END_RETURNSSIZE(u, THESIZE) THESIZE
+	//Todo remove
+#define BEG_RETURNSSIZE(strtype, strname)
+#define MEM_RETURNSSIZE(strtype, membertype, membername, strname, memberidx)
+#define END_RETURNSSIZE(strtype, THESIZE) THESIZE
 
 //*********************************************************************************
 // We save all default native types size, then each struct containing them 
@@ -100,33 +134,57 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 //*********************************************************************************
 
 //evaluates to variable name containing:
-//	number of vec4 entries in that 'uniform vec4 sup_data[];' above
+//	size which is number of vec4 entries in that 'uniform vec4 sup_data[];' above
 #define TYPESIZE_VARNAME(STRTYPE) STRTYPE ## _structsize
 
-#define BEG_SAVETYPESIZE(STRTYPE, u2)				const int TYPESIZE_VARNAME(STRTYPE) =
-#define MEM_SAVETYPESIZE(MEMBERTYPE, u2, u3, u4)		TYPESIZE_VARNAME(MEMBERTYPE) +
-#define END_SAVETYPESIZE(u, THESIZE) THESIZE		0;
+//all native types fit in single vec4 entry
+#define SAVE_NATIVE_TYPE_SIZE(NATIVETYPE) const int TYPESIZE_VARNAME(NATIVETYPE) = 1;
+
+//bool not supported here or anywhere.
+SAVE_NATIVE_TYPE_SIZE(float)
+SAVE_NATIVE_TYPE_SIZE(vec2)
+SAVE_NATIVE_TYPE_SIZE(vec3)
+SAVE_NATIVE_TYPE_SIZE(vec4)
+SAVE_NATIVE_TYPE_SIZE(int)
+SAVE_NATIVE_TYPE_SIZE(ivec2)
+SAVE_NATIVE_TYPE_SIZE(ivec3)
+SAVE_NATIVE_TYPE_SIZE(ivec4)
+
+#define BEG_SAVETYPESIZE(STRTYPE, strname)										const int TYPESIZE_VARNAME(STRTYPE) =
+#define MEM_SAVETYPESIZE(strtype, MEMBERTYPE, membername, strname, memberidx)		TYPESIZE_VARNAME(MEMBERTYPE) +
+#define END_SAVETYPESIZE(strtype, size)											0;
 
 
 //evaluates to variable name containing:
 //	offset (in number of vec4 entries) from start of the struct for this member 
-#define MEMBEROFFSET_VARNAME(STRTYPE, MEMBERIDX) STRTYPE ## _offset_for_memberidx_ ## MEMBERIDX
+#define MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX) STRTYPE ## _offset_for_memberidx_ ## MEMBERIDX
+#define MEMBEROFFSET_VARNAME_INT(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX)
+#define MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_INT(STRTYPE, EVAL(MEMBERIDX))
+
 
 //We save offset 0 for memberidx = 0 to variable
-#define BEG_SAVEFIRSTMEMBEROFFSET(STRTYPE, u2) 			const int MEMBEROFFSET_VARNAME(STRTYPE, 0) = 0;
-#define MEM_SAVEFIRSTMEMBEROFFSET(u, u2, u3, u4, u5)
-#define END_SAVEFIRSTMEMBEROFFSET(u, u2)
+#define BEG_SAVEFIRSTMEMBEROFFSET(STRTYPE, strname) 									const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, 0) = 0;
+#define MEM_SAVEFIRSTMEMBEROFFSET(strtype, membertype, membername, strname, memberidx)
+#define END_SAVEFIRSTMEMBEROFFSET(strtype, size)
 
 
 //Then, for each memberidx we save offset for memberidx+1 (yes, we ll end up with one extra variable in the end, but we dont care)
-#define BEG_SAVENEXTMEMBEROFFSETS(u, u2)
-#define MEM_SAVENEXTMEMBEROFFSETS(STRTYPE, MEMBERTYPE, u2, u3, MEMBERIDX)		const int MEMBEROFFSET_VARNAME(STRTYPE, MEMBERIDX+1) = \
-																					MEMBEROFFSET_VARNAME(STRTYPE, MEMBERIDX) + TYPESIZE_VARNAME(MEMBERTYPE);
-#define END_SAVENEXTMEMBEROFFSETS(u, u2)
+#define BEG_SAVENEXTMEMBEROFFSETS(strtype, strname)
+#define MEM_SAVENEXTMEMBEROFFSETS(STRTYPE, MEMBERTYPE, membername, strname, MEMBERIDX)	\
+			const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, GET_PLUS_ONE(MEMBERIDX)) = 			\
+				MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) + TYPESIZE_VARNAME(MEMBERTYPE);
+#define END_SAVENEXTMEMBEROFFSETS(strtype, size)
 
+#endif
 
+//This only can be used within properly written SUP_VARS_BEGIN [...] SUP_VARS_END
+//section, see example around. Explanation for what 'varidx' even is, is also somewhere there.
+//Yes, it works by having exactly one var per line within
+//the section, so you can simply look at default __LINE__ macro to figure out current varidx.
+//Alternative to this would be way more cumbersome.
+#define CUR_VARIDX GET_MINUS_ONE(__LINE__)
 
-
+#define SUP_DATA_FINAL_INDEX(VARIDX, STRTYPE, MEMBERIDX) (VARSUPDATAIDX_VARNAME_FIN(VARIDX) + MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX))
 
 
 #ifdef _spaceindented_python_code_which_generates_section_below
@@ -234,14 +292,22 @@ SUP_VARS_END
 //takes index of variable in final var list inside SUP_VARS_BEGIN ... SUP_VARS_BEGIN section
 //evaluates to variable name containing:
 //	index in sup_data where this variable (native or struct) begins
-#define VARSUPDATAIDX_VARNAME(VARIDX) sup_data_index_for_varidx_ ## VARIDX
+//           #define VARSUPDATAIDX_VARNAME_FIN(VARIDX) sup_data_index_for_varidx_ ## VARIDX
+
+
+//i dont fully understand why this works and makes macro expand properly, but i need this retardation
+#define VARSUPDATAIDX_VARNAME_IMP(VARIDX) sup_data_index_for_varidx_ ## VARIDX
+#define VARSUPDATAIDX_VARNAME_INT(VARIDX) VARSUPDATAIDX_VARNAME_IMP(VARIDX)
+#define VARSUPDATAIDX_VARNAME_FIN(VARIDX) VARSUPDATAIDX_VARNAME_INT(EVAL(VARIDX))
 
 //we just save initial here
-const int VARSUPDATAIDX_VARNAME(0) = 0;
+const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
+
+
 
 #define SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(THISVARIDX, THISVARIDXTYPE) \
-			const int VARSUPDATAIDX_VARNAME(THISVARIDX+1) = \
-				VARSUPDATAIDX_VARNAME(THISVARIDX) + TYPESIZE_VARNAME(THISVARIDXTYPE);
+			const int VARSUPDATAIDX_VARNAME_FIN(GET_PLUS_ONE(THISVARIDX)) = \
+				VARSUPDATAIDX_VARNAME_FIN(THISVARIDX) + TYPESIZE_VARNAME(THISVARIDXTYPE);
 
 
 
@@ -261,18 +327,33 @@ const int VARSUPDATAIDX_VARNAME(0) = 0;
 //#define STR(STRTYPE, STRNAME) 	GETMETA(STRTYPE)(MAKEMEMBERGETTERS, STRNAME) GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, STRNAME)
 
 
-//This expression with __LINE__ makes sure our first STR call gets VARIDX=0, next 1 and so on.
+//You only use this macro within SUP_VARS_BEGIN [...] SUP_VARS_END section, see example around.
 #define STR(STRTYPE, STRNAME) 											\
-			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(__LINE__ - 1, STRTYPE) 	\
+			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(CUR_VARIDX, STRTYPE) 	\
 			GETMETA(STRTYPE)(SAVEFIRSTMEMBEROFFSET, STRNAME) 			\
 			GETMETA(STRTYPE)(SAVENEXTMEMBEROFFSETS, STRNAME) 			\
 			GETMETA(STRTYPE)(MAKEMEMBERGETTERS, 	STRNAME) 			\
 			GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, 	STRNAME)
 
 
-//always use ooo after STR (its not needed for VAR cause 
-#define ooo(STRTYPE) 			__LINE__ + TYPESIZE_VARNAME(STRTYPE) - 1
-//////////////////////////////////////////////////////////////////////////////////////////////
+//test:
+
+#define STRMETA_Lighting(V,N) STRMAIN_ARG4(Lighting,V,N,\
+vec4, 	fogcolor,			ui("color = [1,1,1,0.2]"	)\
+float, 	fogdistfactor,		ui("lims=[0, 12, 1]"	)\
+vec3, 	AmblightShadfromTo,	ui("lims=[[0, 1, 0.4], s010, s01]"	)\
+float, 	Lgridphasepow)		ui("lims=[0.2, 4, 1]"		)
+STRDECL(Lighting)
 
 
-
+//*************************************************
+//	SUP ACTUAL VARIABLE/STRUCT DECLARATIONS SECTION	
+//*************************************************
+#ifndef SUP_VARS_SECTION
+//absolutely no empty lines allowed or will break ^^
+#line 	0
+SUP_VARS_BEGIN
+		STR(Lighting, lighting)
+		STR(Lighting, lighting2)
+SUP_VARS_END
+#endif
