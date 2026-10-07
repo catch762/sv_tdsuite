@@ -319,8 +319,11 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 //C++ QTouchApp defines what can be contained in these ui("...") sections.
 //Its subject to change, im not even gonna describe current version.
 #define ui(data_for_cpp_to_parse) 
-#define STRDECL(STRTYPE) 		GETMETA(STRTYPE)(DECLSTRUCT, u)\
-								GETMETA(STRTYPE)(SAVETYPESIZE, u)
+#define STRDECL(STRTYPE) 		GETMETA(STRTYPE)(DECLSTRUCT, ~)				\
+								GETMETA(STRTYPE)(SAVETYPESIZE, ~)			\
+								GETMETA(STRTYPE)(SAVEFIRSTMEMBEROFFSET, ~)	\
+								GETMETA(STRTYPE)(SAVENEXTMEMBEROFFSETS, ~)
+								
 #define VAR(T, N) 				T N(){ return sup_as_ ## T(sup_data[__LINE__ - 1]); }
 
 
@@ -330,8 +333,6 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 //You only use this macro within SUP_VARS_BEGIN [...] SUP_VARS_END section, see example around.
 #define STR(STRTYPE, STRNAME) 											\
 			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(CUR_VARIDX, STRTYPE) 	\
-			GETMETA(STRTYPE)(SAVEFIRSTMEMBEROFFSET, STRNAME) 			\
-			GETMETA(STRTYPE)(SAVENEXTMEMBEROFFSETS, STRNAME) 			\
 			GETMETA(STRTYPE)(MAKEMEMBERGETTERS, 	STRNAME) 			\
 			GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, 	STRNAME)
 
