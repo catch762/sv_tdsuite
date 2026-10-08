@@ -2,8 +2,6 @@
 // SUP, or Svvvvyungbepis's Uniform Protocol library
 //**************************************************
 
-
-
 float 	sup_as_float	(vec4 v) {return v.x;	}
 vec2 	sup_as_vec2		(vec4 v) {return v.xy;	}
 vec3 	sup_as_vec3		(vec4 v) {return v.xyz;	}
@@ -103,24 +101,7 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 #define END_DECLSTRUCT(strtype, size)											};
 
 	
-//Defines getter func for instance of some struct;
-//member variables are copied into instance
-	//maybe use struct constructor instead?
-	//here STRNAME is STRPATH
-#define BEG_MAKESTRUCTINSTGETTER(STRTYPE, STRNAME) 										STRTYPE STRNAME(){STRTYPE res;
-#define MEM_MAKESTRUCTINSTGETTER(STRTYPE, membertype, MEMBERNAME, STRNAME, memberidx)		res.MEMBERNAME = STRNAME ## _ ## MEMBERNAME();
-#define END_MAKESTRUCTINSTGETTER(strtype, size)											return res;}
 
-
-
-//Defines getter func for each individual member variable
-	//here STRNAME is STRPATH
-	//issue with index!
-#define BEG_MAKEMEMBERGETTERS(strtype, strname)
-#define MEM_MAKEMEMBERGETTERS(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	\
-			MEMBERTYPE STRNAME ## _ ## MEMBERNAME()\
-			{ return sup_as_ ## MEMBERTYPE(sup_data[SUP_DATA_FINAL_INDEX(CUR_VARIDX, STRTYPE, MEMBERIDX)]); }
-#define END_MAKEMEMBERGETTERS(strtype, size)
 
 //*********************************************************************************
 // We save all default native types size, then each struct containing them 
@@ -258,38 +239,6 @@ for argc in range(argcfrom, argcto+1):
 
 
 
-/*
-------------------------------------------------------------------------------------------
-I ll put usage example beforehand:
- 
-Thats how you declare all your structs, by providing define like this:
-STRMETA_yourStructName which calls STRMAIN_ARG[N] where [N] is number of member variables.
-Once again, (V, N) args are:
-		V: version of macro operation, e.g. 'yourOperation' from example above
- 		N: name of instance of this struct
-------------------------------------------------------------------------------------------
-
-#define STRMETA_Kek(V,N) STRMAIN_ARG2(Kek,V,N,\
-vec4, 	a, 	ui("color = myred")\
-int, 	b)	ui("rad='ry an go sling'")	
-STRDECL(Kek)
-
-//no empty lines in this section at all, logic is tied to __LINE__
-#line 	0
-SUP_VARS_BEGIN
-		STR(Kek, first) 	ui("C2")
-#line	ooo(Kek)
-		STR(Kek, second) 	ui("C2")
-#line	ooo(Kek)
-SUP_VARS_END 
-*/
-
-//takes index of variable in final var list inside SUP_VARS_BEGIN ... SUP_VARS_BEGIN section
-//evaluates to variable name containing:
-//	index in sup_data where this variable (native or struct) begins
-//           #define VARSUPDATAIDX_VARNAME_FIN(VARIDX) sup_data_index_for_varidx_ ## VARIDX
-
-
 //i dont fully understand why this works and makes macro expand properly, but i need this retardation
 #define VARSUPDATAIDX_VARNAME_IMP(VARIDX) sup_data_index_for_varidx_ ## VARIDX
 #define VARSUPDATAIDX_VARNAME_INT(VARIDX) VARSUPDATAIDX_VARNAME_IMP(VARIDX)
@@ -297,7 +246,6 @@ SUP_VARS_END
 
 //we just save initial here
 const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
-
 
 
 #define SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(THISVARIDX, THISVARIDXTYPE) \
@@ -308,38 +256,14 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 
 #define GETMETA(STRTYPE) 		STRMETA_ ## STRTYPE
 
-//These are the only macros you should use:
-//and you have to define STRMETA_yourstructtype(V,N) macro urself
 
-//C++ QTouchApp defines what can be contained in these ui("...") sections.
-//Its subject to change, im not even gonna describe current version.
+
 #define ui(data_for_cpp_to_parse) 
 #define STRDECL(STRTYPE) 		GETMETA(STRTYPE)(DECLSTRUCT, ~)				\
 								GETMETA(STRTYPE)(SAVETYPESIZE, ~)			\
 								GETMETA(STRTYPE)(SAVEFIRSTMEMBEROFFSET, ~)	\
 								GETMETA(STRTYPE)(SAVENEXTMEMBEROFFSETS, ~)
 								
-#define VAR(T, N) 				T N(){ return sup_as_ ## T(sup_data[__LINE__ - 1]); }
-
-
-//#define STR(STRTYPE, STRNAME) 	GETMETA(STRTYPE)(MAKEMEMBERGETTERS, STRNAME) GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, STRNAME)
-
-
-//You only use this macro within SUP_VARS_BEGIN [...] SUP_VARS_END section, see example around.
-#define STR(STRTYPE, STRNAME) 											\
-			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(CUR_VARIDX, STRTYPE) 	\
-			GETMETA(STRTYPE)(MAKEMEMBERGETTERS, 	STRNAME) 			\
-			GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, 	STRNAME)
-
-
-//test:
-
-
-
-// come back later
-
-
-
 
 
 #ifdef expected___
@@ -373,6 +297,9 @@ res.simple = getVarAtSupDataIndex_float(supDataIndex + Outer_offset_for_memberid
 return res; 
 }
 
+//all of the above is created as expected
+
+//!!! This is getter functions i need to be created
 Outer out();
 Inner out_a();
 vec4 	out_a_aaa();
