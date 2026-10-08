@@ -20,63 +20,64 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 #define SUP_ADDTODICT_BEGIN
 #define SUP_ADDTODICT_END
 
-//Todo remove, its unused. C++ dont look for it. Dont need to define these sections, put decls anywhere
-#define SUP_STRUCTS_BEGIN
-#define SUP_STRUCTS_END
-
 //C++ QtouchApp looks for these tags, there has to be exactly one such section
 //containing all variables (of native types like vec4 and of types you declared with macros below)
 #define SUP_VARS_BEGIN 
 #define SUP_VARS_END
 
-#define INDR(P) P
-#define EVAL(x) x
+
+//*************************************************
+// This will be moved to sv_preprocessor.glsl later
+//*************************************************
+#ifndef SV_PREPROCESSOR_SECTION
+
+#define SV_EVAL(x) x
 
 //This exists because if you call SOME_MACRO(2+1), you wont get 3. You will get '2+1'.
 //Which would be fine, but you cant use it as part of variable name, for instance.
 //This problem is fixed with macro substitutions, enjoy this brilliant solution:
 
-#define PLUS_ONE_0 1
-#define PLUS_ONE_1 2
-#define PLUS_ONE_2 3
-#define PLUS_ONE_3 4
-#define PLUS_ONE_4 5
-#define PLUS_ONE_5 6
-#define PLUS_ONE_6 7
-#define PLUS_ONE_7 8
-#define PLUS_ONE_8 9
-#define PLUS_ONE_9 10
-#define PLUS_ONE_10 11
-#define PLUS_ONE_11 12
-#define PLUS_ONE_12 13
-#define PLUS_ONE_13 14
-#define PLUS_ONE_14 15
-#define PLUS_ONE_15 16
+#define SV_PLUS_ONE_0 1
+#define SV_PLUS_ONE_1 2
+#define SV_PLUS_ONE_2 3
+#define SV_PLUS_ONE_3 4
+#define SV_PLUS_ONE_4 5
+#define SV_PLUS_ONE_5 6
+#define SV_PLUS_ONE_6 7
+#define SV_PLUS_ONE_7 8
+#define SV_PLUS_ONE_8 9
+#define SV_PLUS_ONE_9 10
+#define SV_PLUS_ONE_10 11
+#define SV_PLUS_ONE_11 12
+#define SV_PLUS_ONE_12 13
+#define SV_PLUS_ONE_13 14
+#define SV_PLUS_ONE_14 15
+#define SV_PLUS_ONE_15 16
 
-#define MINUS_ONE_0 -1
-#define MINUS_ONE_1 0
-#define MINUS_ONE_2 1
-#define MINUS_ONE_3 2
-#define MINUS_ONE_4 3
-#define MINUS_ONE_5 4
-#define MINUS_ONE_6 5
-#define MINUS_ONE_7 6
-#define MINUS_ONE_8 7
-#define MINUS_ONE_9 8
-#define MINUS_ONE_10 9
-#define MINUS_ONE_11 10
-#define MINUS_ONE_12 11
-#define MINUS_ONE_13 12
-#define MINUS_ONE_14 13
-#define MINUS_ONE_15 14
+#define SV_MINUS_ONE_0 -1
+#define SV_MINUS_ONE_1 0
+#define SV_MINUS_ONE_2 1
+#define SV_MINUS_ONE_3 2
+#define SV_MINUS_ONE_4 3
+#define SV_MINUS_ONE_5 4
+#define SV_MINUS_ONE_6 5
+#define SV_MINUS_ONE_7 6
+#define SV_MINUS_ONE_8 7
+#define SV_MINUS_ONE_9 8
+#define SV_MINUS_ONE_10 9
+#define SV_MINUS_ONE_11 10
+#define SV_MINUS_ONE_12 11
+#define SV_MINUS_ONE_13 12
+#define SV_MINUS_ONE_14 13
+#define SV_MINUS_ONE_15 14
 
-#define CAT_INNER(a, b) a ## b
-#define CAT(a, b) CAT_INNER(a, b)
+#define SV_CAT_INNER(a, b) a ## b
+#define SV_CAT(a, b) SV_CAT_INNER(a, b)
 
-#define GET_PLUS_ONE(NUMBER) CAT(PLUS_ONE_, NUMBER)
-#define GET_MINUS_ONE(NUMBER) CAT(MINUS_ONE_, NUMBER)
+#define SV_GET_PLUS_ONE(NUMBER) SV_CAT(SV_PLUS_ONE_, NUMBER)
+#define SV_GET_MINUS_ONE(NUMBER) SV_CAT(SV_MINUS_ONE_, NUMBER)
 
-
+#endif
 
 
 
@@ -159,7 +160,7 @@ SAVE_NATIVE_TYPE_SIZE(ivec4)
 //	offset (in number of vec4 entries) from start of the struct for this member 
 #define MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX) STRTYPE ## _offset_for_memberidx_ ## MEMBERIDX
 #define MEMBEROFFSET_VARNAME_INT(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX)
-#define MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_INT(STRTYPE, EVAL(MEMBERIDX))
+#define MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_INT(STRTYPE, SV_EVAL(MEMBERIDX))
 
 
 //We save offset 0 for memberidx = 0 to variable
@@ -171,7 +172,7 @@ SAVE_NATIVE_TYPE_SIZE(ivec4)
 //Then, for each memberidx we save offset for memberidx+1 (yes, we ll end up with one extra variable in the end, but we dont care)
 #define BEG_SAVENEXTMEMBEROFFSETS(strtype, strname)
 #define MEM_SAVENEXTMEMBEROFFSETS(STRTYPE, MEMBERTYPE, membername, strname, MEMBERIDX)	\
-			const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, GET_PLUS_ONE(MEMBERIDX)) = 			\
+			const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, SV_GET_PLUS_ONE(MEMBERIDX)) = 			\
 				MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) + TYPESIZE_VARNAME(MEMBERTYPE);
 #define END_SAVENEXTMEMBEROFFSETS(strtype, size)
 
@@ -182,7 +183,7 @@ SAVE_NATIVE_TYPE_SIZE(ivec4)
 //Yes, it works by having exactly one var per line within
 //the section, so you can simply look at default __LINE__ macro to figure out current varidx.
 //Alternative to this would be way more cumbersome.
-#define CUR_VARIDX GET_MINUS_ONE(__LINE__)
+#define CUR_VARIDX SV_GET_MINUS_ONE(__LINE__)
 
 #define SUP_DATA_FINAL_INDEX(VARIDX, STRTYPE, MEMBERIDX) (VARSUPDATAIDX_VARNAME_FIN(VARIDX) + MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX))
 
@@ -298,7 +299,7 @@ SUP_VARS_END
 //i dont fully understand why this works and makes macro expand properly, but i need this retardation
 #define VARSUPDATAIDX_VARNAME_IMP(VARIDX) sup_data_index_for_varidx_ ## VARIDX
 #define VARSUPDATAIDX_VARNAME_INT(VARIDX) VARSUPDATAIDX_VARNAME_IMP(VARIDX)
-#define VARSUPDATAIDX_VARNAME_FIN(VARIDX) VARSUPDATAIDX_VARNAME_INT(EVAL(VARIDX))
+#define VARSUPDATAIDX_VARNAME_FIN(VARIDX) VARSUPDATAIDX_VARNAME_INT(SV_EVAL(VARIDX))
 
 //we just save initial here
 const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
@@ -306,7 +307,7 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 
 
 #define SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(THISVARIDX, THISVARIDXTYPE) \
-			const int VARSUPDATAIDX_VARNAME_FIN(GET_PLUS_ONE(THISVARIDX)) = \
+			const int VARSUPDATAIDX_VARNAME_FIN(SV_GET_PLUS_ONE(THISVARIDX)) = \
 				VARSUPDATAIDX_VARNAME_FIN(THISVARIDX) + TYPESIZE_VARNAME(THISVARIDXTYPE);
 
 
