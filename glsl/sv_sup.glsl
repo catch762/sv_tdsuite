@@ -2,8 +2,7 @@
 // SUP, or Svvvvyungbepis's Uniform Protocol library
 //**************************************************
 
-//everything goes through this
-uniform vec4 sup_data[];
+
 
 float 	sup_as_float	(vec4 v) {return v.x;	}
 vec2 	sup_as_vec2		(vec4 v) {return v.xy;	}
@@ -118,8 +117,9 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 	//here STRNAME is STRPATH
 	//issue with index!
 #define BEG_MAKEMEMBERGETTERS(strtype, strname)
-#define MEM_MAKEMEMBERGETTERS(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	MEMBERTYPE STRNAME ## _ ## MEMBERNAME()\
-																					{ return sup_as_ ## MEMBERTYPE(sup_data[SUP_DATA_FINAL_INDEX(CUR_VARIDX, STRTYPE, MEMBERIDX)]); }
+#define MEM_MAKEMEMBERGETTERS(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	\
+			MEMBERTYPE STRNAME ## _ ## MEMBERNAME()\
+			{ return sup_as_ ## MEMBERTYPE(sup_data[SUP_DATA_FINAL_INDEX(CUR_VARIDX, STRTYPE, MEMBERIDX)]); }
 #define END_MAKEMEMBERGETTERS(strtype, size)
 
 //*********************************************************************************
@@ -334,24 +334,120 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 
 //test:
 
+
+
+// come back later
+
+
+
+
+
+#ifdef expected___
+
+struct Inner
+{
+	vec4 x;
+	vec4 y;
+};
+
+struct Outer
+{
+	Inner a;
+	Inner b;
+}
+
+
+Inner getVarAtSupDataIndex_Inner(int supdataindex)
+{
+	Inner res;
+	res.x = getVarAtSupDataIndex_vec4(...);
+	res.y = getVarAtSupDataIndex_vec4(...);
+	return res;
+}
+
+
+
+Inner light_inst()
+{ 
+	return sup_as_Inner(sup_data[ (sup_data_index_for_varidx_0 + Lighting_offset_for_memberidx_0)]);
+} 
+						
+float light_simple()
+{ 
+	return sup_as_float(sup_data[ (sup_data_index_for_varidx_0 + Lighting_offset_for_memberidx_1)]); 
+} 
+
+Lighting light()
+{ 
+	Lighting res; 
+	res.inst = light_inst(); 
+	res.simple = light_simple(); 
+	return res; 
+}
+
+#endif
+
+
+
+
+
+#ifndef _ALT_VAR_DECL_
+
+
 #define STRMETA_Inner(V,N) STRMAIN_ARG2(Inner,V,N,\
 vec4, 	aaa,	\
 float, 	bbb)
 STRDECL(Inner)
 
-#define STRMETA_Lighting(V,N) STRMAIN_ARG2(Lighting,V,N,\
-Inner, 	inn,				\
+#define STRMETA_Outer(V,N) STRMAIN_ARG2(Outer,V,N,\
+Inner, 	inst,				\
 float, 	simple)
-STRDECL(Lighting)
+STRDECL(Outer)
 
 
-//*************************************************
-//	SUP ACTUAL VARIABLE/STRUCT DECLARATIONS SECTION	
-//*************************************************
-#ifndef SUP_VARS_SECTION
-//absolutely no empty lines allowed or will break ^^
-#line 	0
-SUP_VARS_BEGIN
-		STR(Lighting, lighting)
-SUP_VARS_END
+#define SUP_VARLIST(F) \
+	F(0, Outer, o)
+
+//just to convey meaning better
+#define FOR_EACH_VARLIST_ENTRY(FUNCVISITOR) SUP_VARLIST(FUNCVISITOR)
+
+#define PLUS_SIZE_OF_VARLIST_ENTRY(varidx, STRTYPE, strname) + TYPESIZE_VARNAME(STRTYPE)
+
+
+const int entireVarlistSize = FOR_EACH_VARLIST_ENTRY(PLUS_SIZE_OF_VARLIST_ENTRY);
+
+//everything goes through this
+uniform vec4 sup_data[entireVarlistSize];
+
+#ifndef _FromIndexStuff
+	
+	#define GETVARATINDEX_FUNCNAME(TYPENAME) getVarAtSupDataIndex_ ## TYPENAME
+	
+	#define FOR_EACH_SUPPORTED_NATIVE_TYPE(F) \
+		F(float)\
+		F(vec2)\
+		F(vec3)\
+		F(vec4)\
+		F(int)\
+		F(ivec2)\
+		F(ivec3)\
+		F(ivec4)
+
+	#define MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE(TYPE) 	\
+		TYPE GETVARATINDEX_FUNCNAME(TYPE) (int supDataIndex)\
+		{													\
+			return sup_as_ ## TYPE (sup_data[supDataIndex]);\
+		}
+
+	FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)
+#endif
+
+#define INIT_VARLIST_ENTRY(VARIDX, STRTYPE, STRNAME) 				\
+			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(VARIDX, STRTYPE) 	\
+			GETMETA(STRTYPE)(MAKEMEMBERGETTERS, 	STRNAME) 		\
+			GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, 	STRNAME)
+
+//FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
+
+
 #endif
