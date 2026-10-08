@@ -103,9 +103,10 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 #define MEM_DECLSTRUCT(strtype, MEMBERTYPE, MEMBERNAME, strname, memberidx)			MEMBERTYPE MEMBERNAME;
 #define END_DECLSTRUCT(strtype, size)											};
 
-	//maybe use struct constructor instead?
+	
 //Defines getter func for instance of some struct;
 //member variables are copied into instance
+	//maybe use struct constructor instead?
 	//here STRNAME is STRPATH
 #define BEG_MAKESTRUCTINSTGETTER(STRTYPE, STRNAME) 										STRTYPE STRNAME(){STRTYPE res;
 #define MEM_MAKESTRUCTINSTGETTER(STRTYPE, membertype, MEMBERNAME, STRNAME, memberidx)		res.MEMBERNAME = STRNAME ## _ ## MEMBERNAME();
@@ -120,13 +121,6 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 #define MEM_MAKEMEMBERGETTERS(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	MEMBERTYPE STRNAME ## _ ## MEMBERNAME()\
 																					{ return sup_as_ ## MEMBERTYPE(sup_data[SUP_DATA_FINAL_INDEX(CUR_VARIDX, STRTYPE, MEMBERIDX)]); }
 #define END_MAKEMEMBERGETTERS(strtype, size)
-
-
-//Simply gets count of member variables.
-	//Todo remove
-#define BEG_RETURNSSIZE(strtype, strname)
-#define MEM_RETURNSSIZE(strtype, membertype, membername, strname, memberidx)
-#define END_RETURNSSIZE(strtype, THESIZE) THESIZE
 
 //*********************************************************************************
 // We save all default native types size, then each struct containing them 
@@ -340,11 +334,14 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 
 //test:
 
-#define STRMETA_Lighting(V,N) STRMAIN_ARG4(Lighting,V,N,\
-vec4, 	fogcolor,			ui("color = [1,1,1,0.2]"	)\
-float, 	fogdistfactor,		ui("lims=[0, 12, 1]"	)\
-vec3, 	AmblightShadfromTo,	ui("lims=[[0, 1, 0.4], s010, s01]"	)\
-float, 	Lgridphasepow)		ui("lims=[0.2, 4, 1]"		)
+#define STRMETA_Inner(V,N) STRMAIN_ARG2(Inner,V,N,\
+vec4, 	aaa,	\
+float, 	bbb)
+STRDECL(Inner)
+
+#define STRMETA_Lighting(V,N) STRMAIN_ARG2(Lighting,V,N,\
+Inner, 	inn,				\
+float, 	simple)
 STRDECL(Lighting)
 
 
@@ -356,6 +353,5 @@ STRDECL(Lighting)
 #line 	0
 SUP_VARS_BEGIN
 		STR(Lighting, lighting)
-		STR(Lighting, lighting2)
 SUP_VARS_END
 #endif
