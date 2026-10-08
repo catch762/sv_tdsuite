@@ -96,9 +96,12 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 
 
 //Simple standard declaration of structs and its members.
-#define BEG_DECLSTRUCT(STRTYPE, strname) 										struct STRTYPE {
-#define MEM_DECLSTRUCT(strtype, MEMBERTYPE, MEMBERNAME, strname, memberidx)			MEMBERTYPE MEMBERNAME;
-#define END_DECLSTRUCT(strtype, size)											};
+#define BEG_DECLSTRUCT(STRTYPE, strname, strdataidx)	\
+	struct STRTYPE {
+#define MEM_DECLSTRUCT(strtype, MEMBERTYPE, MEMBERNAME, strname, memberidx, strdataidx)	\
+		MEMBERTYPE MEMBERNAME;
+#define END_DECLSTRUCT(strtype, size)	\
+	};
 
 	
 
@@ -126,9 +129,12 @@ SAVE_NATIVE_TYPE_SIZE(ivec2)
 SAVE_NATIVE_TYPE_SIZE(ivec3)
 SAVE_NATIVE_TYPE_SIZE(ivec4)
 
-#define BEG_SAVETYPESIZE(STRTYPE, strname)										const int TYPESIZE_VARNAME(STRTYPE) =
-#define MEM_SAVETYPESIZE(strtype, MEMBERTYPE, membername, strname, memberidx)		TYPESIZE_VARNAME(MEMBERTYPE) +
-#define END_SAVETYPESIZE(strtype, size)											0;
+#define BEG_SAVETYPESIZE(STRTYPE, strname, strdataidx)	\
+	const int TYPESIZE_VARNAME(STRTYPE) =
+#define MEM_SAVETYPESIZE(strtype, MEMBERTYPE, membername, strname, memberidx, strdataidx)	\
+	TYPESIZE_VARNAME(MEMBERTYPE) +
+#define END_SAVETYPESIZE(strtype, size)	\
+	0;
 
 
 //evaluates to variable name containing:
@@ -139,26 +145,33 @@ SAVE_NATIVE_TYPE_SIZE(ivec4)
 
 
 //We save offset 0 for memberidx = 0 to variable
-#define BEG_SAVEFIRSTMEMBEROFFSET(STRTYPE, strname) 									const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, 0) = 0;
-#define MEM_SAVEFIRSTMEMBEROFFSET(strtype, membertype, membername, strname, memberidx)
+#define BEG_SAVEFIRSTMEMBEROFFSET(STRTYPE, strname, strdataidx)	\
+	const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, 0) = 0;
+#define MEM_SAVEFIRSTMEMBEROFFSET(strtype, membertype, membername, strname, memberidx, strdataidx)
 #define END_SAVEFIRSTMEMBEROFFSET(strtype, size)
 
 
 //Then, for each memberidx we save offset for memberidx+1 (yes, we ll end up with one extra variable in the end, but we dont care)
-#define BEG_SAVENEXTMEMBEROFFSETS(strtype, strname)
-#define MEM_SAVENEXTMEMBEROFFSETS(STRTYPE, MEMBERTYPE, membername, strname, MEMBERIDX)	\
+#define BEG_SAVENEXTMEMBEROFFSETS(strtype, strname, strdataidx)
+#define MEM_SAVENEXTMEMBEROFFSETS(STRTYPE, MEMBERTYPE, membername, strname, MEMBERIDX, strdataidx)	\
 			const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, SV_GET_PLUS_ONE(MEMBERIDX)) = 			\
 				MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) + TYPESIZE_VARNAME(MEMBERTYPE);
 #define END_SAVENEXTMEMBEROFFSETS(strtype, size)
 
+
+
+
+
+
+
+
+
+
+
+
 #endif
 
-//This only can be used within properly written SUP_VARS_BEGIN [...] SUP_VARS_END
-//section, see example around. Explanation for what 'varidx' even is, is also somewhere there.
-//Yes, it works by having exactly one var per line within
-//the section, so you can simply look at default __LINE__ macro to figure out current varidx.
-//Alternative to this would be way more cumbersome.
-#define CUR_VARIDX SV_GET_MINUS_ONE(__LINE__)
+
 
 #define SUP_DATA_FINAL_INDEX(VARIDX, STRTYPE, MEMBERIDX) (VARSUPDATAIDX_VARNAME_FIN(VARIDX) + MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX))
 
@@ -299,7 +312,7 @@ return res;
 
 //all of the above is created as expected
 
-//!!! This is getter functions i need to be created
+//!!! This is getter functions i need to be created automatically
 Outer out();
 Inner out_a();
 vec4 	out_a_aaa();
@@ -324,32 +337,31 @@ float out_simple();
 
 
 
-#define BEG_MAKEGETVARATINDEXFUNC(STRTYPE, STRNAME) 			\
+#define BEG_MAKEGETVARATINDEXFUNC(STRTYPE, STRNAME, strdataidx)	\
 	STRTYPE GETVARATINDEX_FUNCNAME(STRTYPE) (int supDataIndex) 	\
 	{															\
 		STRTYPE res;
 		
-#define MEM_MAKEGETVARATINDEXFUNC(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	\
-		res.MEMBERNAME = GETVARATINDEX_FUNCNAME(MEMBERTYPE)( 								\
-							supDataIndex + MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) 	\
+#define MEM_MAKEGETVARATINDEXFUNC(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX, strdataidx)	\
+		res.MEMBERNAME = GETVARATINDEX_FUNCNAME(MEMBERTYPE)( 										\
+							supDataIndex + MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) 			\
 						);
 		
 #define END_MAKEGETVARATINDEXFUNC(strtype, size)	\
 		return res;									\
 	}
 
-#define INIT_VARLIST_ENTRY(VARIDX, STRTYPE, STRNAME) 				\
-			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(VARIDX, STRTYPE)
 
 
 
-#define STRMETA_Inner(V,N) STRMAIN_ARG2(Inner,V,N,\
+
+#define STRMETA_Inner(V,N,I) STRMAIN_ARG2(Inner,V,N,\
 vec4, 	aaa,	\
 float, 	bbb)
 STRDECL(Inner)
 
-#define STRMETA_Outer(V,N) STRMAIN_ARG2(Outer,V,N,\
-Inner, 	inst,				\
+#define STRMETA_Outer(V,N,I) STRMAIN_ARG2(Outer,V,N,\
+Inner, 	a,				\
 float, 	simple)
 STRDECL(Outer)
 
@@ -359,7 +371,7 @@ STRDECL(Outer)
 	F(Outer)
 
 #define SUP_VARLIST(F) \
-	F(0, Outer, out)
+	F(0, Outer, outx)
 
 //just to convey meaning better
 #define FOR_EACH_VARLIST_ENTRY(FUNCVISITOR) SUP_VARLIST(FUNCVISITOR)
@@ -400,7 +412,39 @@ FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)
 
 FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 
+
+
+
+//Experimental:
+
+#define MAKE_GETTER_FUNC(STRTYPE, STRNAME, STRDATAIDX) 		\
+	STRTYPE STRNAME()										\
+	{														\
+		return GETVARATINDEX_FUNCNAME(STRTYPE) (STRDATAIDX);\
+	}
+
+#define BEG_MAKEGETTERS_L0(STRTYPE, STRNAME, STRDATAIDX) \
+			MAKE_GETTER_FUNC(STRTYPE, STRNAME, STRUCTSUPDATAIDX)
+			
+#define MEM_MAKEGETTERS_L0(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX, STRDATAIDX) 	\
+			GETMETA(MEMBERTYPE)( MAKEGETTERS_L1, 												\
+								 unusedname, 													\
+								 STRDATAIDX + MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) )
+	
+#define END_MAKEGETTERS_L0(strtype, size)
+
+// /Experimental^
+
+
+
+
+#define INIT_VARLIST_ENTRY(VARIDX, STRTYPE, STRNAME) 				\
+			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(VARIDX, STRTYPE)		\
+			MAKE_GETTER_FUNC(STRTYPE, STRNAME, VARSUPDATAIDX_VARNAME_FIN(VARIDX))
+
 FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
 
 
 #endif
+
+
