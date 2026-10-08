@@ -393,6 +393,30 @@ Lighting light()
 
 #ifndef _ALT_VAR_DECL_
 
+//Func argument: (int supDataIndex)
+#define GETVARATINDEX_FUNCNAME(TYPENAME) getVarAtSupDataIndex_ ## TYPENAME
+
+
+
+
+#define BEG_MAKEGETVARATINDEXFUNC(STRTYPE, STRNAME) 			\
+	STRTYPE GETVARATINDEX_FUNCNAME(STRTYPE) (int supDataIndex) 	\
+	{															\
+		STRTYPE res;
+		
+#define MEM_MAKEGETVARATINDEXFUNC(STRTYPE, MEMBERTYPE, MEMBERNAME, STRNAME, MEMBERIDX)	\
+		res.MEMBERNAME = GETVARATINDEX_FUNCNAME(MEMBERTYPE)( 								\
+							supDataIndex + MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) 	\
+						);
+		
+#define END_MAKEGETVARATINDEXFUNC(strtype, size)	\
+		return res;									\
+	}
+
+#define INIT_VARLIST_ENTRY(VARIDX, STRTYPE, STRNAME) 				\
+			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(VARIDX, STRTYPE)
+
+
 
 #define STRMETA_Inner(V,N) STRMAIN_ARG2(Inner,V,N,\
 vec4, 	aaa,	\
@@ -404,12 +428,17 @@ Inner, 	inst,				\
 float, 	simple)
 STRDECL(Outer)
 
+//Unfortunately we have to.
+#define SUP_CUSTOMTYPESLIST(F) \
+	F(Inner)\
+	F(Outer)
 
 #define SUP_VARLIST(F) \
 	F(0, Outer, o)
 
 //just to convey meaning better
 #define FOR_EACH_VARLIST_ENTRY(FUNCVISITOR) SUP_VARLIST(FUNCVISITOR)
+#define FOR_EACH_CUSTOMTYPE(FUNCVISITOR) SUP_CUSTOMTYPESLIST(FUNCVISITOR)
 
 #define PLUS_SIZE_OF_VARLIST_ENTRY(varidx, STRTYPE, strname) + TYPESIZE_VARNAME(STRTYPE)
 
@@ -419,33 +448,34 @@ const int entireVarlistSize = FOR_EACH_VARLIST_ENTRY(PLUS_SIZE_OF_VARLIST_ENTRY)
 //everything goes through this
 uniform vec4 sup_data[entireVarlistSize];
 
-#ifndef _FromIndexStuff
-	
-	#define GETVARATINDEX_FUNCNAME(TYPENAME) getVarAtSupDataIndex_ ## TYPENAME
-	
-	#define FOR_EACH_SUPPORTED_NATIVE_TYPE(F) \
-		F(float)\
-		F(vec2)\
-		F(vec3)\
-		F(vec4)\
-		F(int)\
-		F(ivec2)\
-		F(ivec3)\
-		F(ivec4)
+#ifndef GETVARATINDEX_for_native
 
-	#define MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE(TYPE) 	\
-		TYPE GETVARATINDEX_FUNCNAME(TYPE) (int supDataIndex)\
-		{													\
-			return sup_as_ ## TYPE (sup_data[supDataIndex]);\
-		}
+#define FOR_EACH_SUPPORTED_NATIVE_TYPE(F) \
+	F(float)\
+	F(vec2)\
+	F(vec3)\
+	F(vec4)\
+	F(int)\
+	F(ivec2)\
+	F(ivec3)\
+	F(ivec4)
 
-	FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)
+#define MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE(TYPE) 	\
+	TYPE GETVARATINDEX_FUNCNAME(TYPE) (int supDataIndex)\
+	{													\
+		return sup_as_ ## TYPE (sup_data[supDataIndex]);\
+	}
+
+FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)
+
+#define MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE(STRTYPE) 	\
+	GETMETA(STRTYPE)(MAKEGETVARATINDEXFUNC, ~)
+
+FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
+
 #endif
+			
 
-#define INIT_VARLIST_ENTRY(VARIDX, STRTYPE, STRNAME) 				\
-			SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(VARIDX, STRTYPE) 	\
-			GETMETA(STRTYPE)(MAKEMEMBERGETTERS, 	STRNAME) 		\
-			GETMETA(STRTYPE)(MAKESTRUCTINSTGETTER, 	STRNAME)
 
 //FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
 
