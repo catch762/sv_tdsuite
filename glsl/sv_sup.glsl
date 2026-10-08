@@ -344,46 +344,44 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 
 #ifdef expected___
 
+//Data:
 struct Inner
 {
-	vec4 x;
-	vec4 y;
+	vec4 aaa;
+	vec4 bbb;
 };
-
 struct Outer
 {
 	Inner a;
-	Inner b;
+	float simple;
 }
+Outer out;
 
-
-Inner getVarAtSupDataIndex_Inner(int supdataindex)
-{
-	Inner res;
-	res.x = getVarAtSupDataIndex_vec4(...);
-	res.y = getVarAtSupDataIndex_vec4(...);
-	return res;
-}
-
-
-
-Inner light_inst()
+Inner getVarAtSupDataIndex_Inner(int supDataIndex) 
 { 
-	return sup_as_Inner(sup_data[ (sup_data_index_for_varidx_0 + Lighting_offset_for_memberidx_0)]);
-} 
-						
-float light_simple()
-{ 
-	return sup_as_float(sup_data[ (sup_data_index_for_varidx_0 + Lighting_offset_for_memberidx_1)]); 
+Inner res; 
+res.aaa = getVarAtSupDataIndex_vec4(supDataIndex + Inner_offset_for_memberidx_0); 
+res.bbb = getVarAtSupDataIndex_float(supDataIndex + Inner_offset_for_memberidx_1); 
+return res; 
 } 
 
-Lighting light()
+Outer getVarAtSupDataIndex_Outer(int supDataIndex) 
 { 
-	Lighting res; 
-	res.inst = light_inst(); 
-	res.simple = light_simple(); 
-	return res; 
+Outer res; 
+res.inst = getVarAtSupDataIndex_Inner(supDataIndex + Outer_offset_for_memberidx_0); 
+res.simple = getVarAtSupDataIndex_float(supDataIndex + Outer_offset_for_memberidx_1); 
+return res; 
 }
+
+Outer out();
+Inner out_a();
+vec4 	out_a_aaa();
+vec4 	out_a_bbb();
+float out_simple();
+
+
+
+
 
 #endif
 
@@ -434,7 +432,7 @@ STRDECL(Outer)
 	F(Outer)
 
 #define SUP_VARLIST(F) \
-	F(0, Outer, o)
+	F(0, Outer, out)
 
 //just to convey meaning better
 #define FOR_EACH_VARLIST_ENTRY(FUNCVISITOR) SUP_VARLIST(FUNCVISITOR)
@@ -475,7 +473,7 @@ FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)
 
 FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 
-//FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
+FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
 
 
 #endif
