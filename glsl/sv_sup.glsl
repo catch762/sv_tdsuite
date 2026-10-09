@@ -425,6 +425,35 @@ FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 
 
 
+
+
+
+
+
+
+
+
+
+
+//issue is, you need arg0 version of strmain and native types use it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Experimental:
 
 //This is needed for MAKEGETTERS macros (meaning of this, when we hit a native
