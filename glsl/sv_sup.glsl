@@ -1,3 +1,5 @@
+
+
 //todo sup_lighting use list of module
 //maybe map to float arr after all?
 
@@ -31,51 +33,39 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 //*************************************************
 #ifndef SV_PREPROCESSOR_SECTION
 
-#define SV_EVAL(x) x
+#define SUP_EVAL(x) x
 
 //This exists because if you call SOME_MACRO(2+1), you wont get 3. You will get '2+1'.
 //Which would be fine, but you cant use it as part of variable name, for instance.
 //This problem is fixed with macro substitutions, enjoy this brilliant solution:
 
-#define SV_PLUS_ONE_0 1
-#define SV_PLUS_ONE_1 2
-#define SV_PLUS_ONE_2 3
-#define SV_PLUS_ONE_3 4
-#define SV_PLUS_ONE_4 5
-#define SV_PLUS_ONE_5 6
-#define SV_PLUS_ONE_6 7
-#define SV_PLUS_ONE_7 8
-#define SV_PLUS_ONE_8 9
-#define SV_PLUS_ONE_9 10
-#define SV_PLUS_ONE_10 11
-#define SV_PLUS_ONE_11 12
-#define SV_PLUS_ONE_12 13
-#define SV_PLUS_ONE_13 14
-#define SV_PLUS_ONE_14 15
-#define SV_PLUS_ONE_15 16
+#define SUP_PLUS_ONE_0 1
+#define SUP_PLUS_ONE_1 2
+#define SUP_PLUS_ONE_2 3
+#define SUP_PLUS_ONE_3 4
+#define SUP_PLUS_ONE_4 5
+#define SUP_PLUS_ONE_5 6
+#define SUP_PLUS_ONE_6 7
+#define SUP_PLUS_ONE_7 8
+#define SUP_PLUS_ONE_8 9
+#define SUP_PLUS_ONE_9 10
+#define SUP_PLUS_ONE_10 11
+#define SUP_PLUS_ONE_11 12
+#define SUP_PLUS_ONE_12 13
+#define SUP_PLUS_ONE_13 14
+#define SUP_PLUS_ONE_14 15
+#define SUP_PLUS_ONE_15 16
+#define SUP_PLUS_ONE_16 17
+#define SUP_PLUS_ONE_17 18
+#define SUP_PLUS_ONE_18 19
+#define SUP_PLUS_ONE_19 20
+#define SUP_PLUS_ONE_20 21
 
-#define SV_MINUS_ONE_0 -1
-#define SV_MINUS_ONE_1 0
-#define SV_MINUS_ONE_2 1
-#define SV_MINUS_ONE_3 2
-#define SV_MINUS_ONE_4 3
-#define SV_MINUS_ONE_5 4
-#define SV_MINUS_ONE_6 5
-#define SV_MINUS_ONE_7 6
-#define SV_MINUS_ONE_8 7
-#define SV_MINUS_ONE_9 8
-#define SV_MINUS_ONE_10 9
-#define SV_MINUS_ONE_11 10
-#define SV_MINUS_ONE_12 11
-#define SV_MINUS_ONE_13 12
-#define SV_MINUS_ONE_14 13
-#define SV_MINUS_ONE_15 14
 
-#define SV_CAT_INNER(a, b) a ## b
-#define SV_CAT(a, b) SV_CAT_INNER(a, b)
+#define SUP_CAT_INNER(a, b) a ## b
+#define SUP_CAT(a, b) SUP_CAT_INNER(a, b)
 
-#define SV_GET_PLUS_ONE(NUMBER) SV_CAT(SV_PLUS_ONE_, NUMBER)
-#define SV_GET_MINUS_ONE(NUMBER) SV_CAT(SV_MINUS_ONE_, NUMBER)
+#define SUP_GET_PLUS_ONE(NUMBER) SUP_CAT(SUP_PLUS_ONE_, NUMBER)
 
 #endif
 
@@ -144,7 +134,7 @@ SAVE_NATIVE_TYPE_SIZE(ivec4)
 //	offset (in number of vec4 entries) from start of the struct for this member 
 #define MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX) STRTYPE ## _offset_for_memberidx_ ## MEMBERIDX
 #define MEMBEROFFSET_VARNAME_INT(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX)
-#define MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_INT(STRTYPE, SV_EVAL(MEMBERIDX))
+#define MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_INT(STRTYPE, SUP_EVAL(MEMBERIDX))
 
 
 //We save offset 0 for memberidx = 0 to variable
@@ -157,7 +147,7 @@ SAVE_NATIVE_TYPE_SIZE(ivec4)
 //Then, for each memberidx we save offset for memberidx+1 (yes, we ll end up with one extra variable in the end, but we dont care)
 #define BEG_SAVENEXTMEMBEROFFSETS(strtype, strname, strdataidx)
 #define MEM_SAVENEXTMEMBEROFFSETS(STRTYPE, MEMBERTYPE, membername, strname, MEMBERIDX, strdataidx)	\
-			const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, SV_GET_PLUS_ONE(MEMBERIDX)) = 			\
+			const int MEMBEROFFSET_VARNAME_FIN(STRTYPE, SUP_GET_PLUS_ONE(MEMBERIDX)) = 			\
 				MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) + TYPESIZE_VARNAME(MEMBERTYPE);
 #define END_SAVENEXTMEMBEROFFSETS(strtype, size)
 
@@ -435,14 +425,14 @@ for level in range(levelfrom, levelto+1):
 //i dont fully understand why this works and makes macro expand properly, but i need this retardation
 #define VARSUPDATAIDX_VARNAME_IMP(VARIDX) sup_data_index_for_varidx_ ## VARIDX
 #define VARSUPDATAIDX_VARNAME_INT(VARIDX) VARSUPDATAIDX_VARNAME_IMP(VARIDX)
-#define VARSUPDATAIDX_VARNAME_FIN(VARIDX) VARSUPDATAIDX_VARNAME_INT(SV_EVAL(VARIDX))
+#define VARSUPDATAIDX_VARNAME_FIN(VARIDX) VARSUPDATAIDX_VARNAME_INT(SUP_EVAL(VARIDX))
 
 //we just save initial here
 const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 
 
 #define SAVE_VARSUPDATAIDX_FOR_NEXT_VARIDX(THISVARIDX, THISVARIDXTYPE) \
-			const int VARSUPDATAIDX_VARNAME_FIN(SV_GET_PLUS_ONE(THISVARIDX)) = \
+			const int VARSUPDATAIDX_VARNAME_FIN(SUP_GET_PLUS_ONE(THISVARIDX)) = \
 				VARSUPDATAIDX_VARNAME_FIN(THISVARIDX) + TYPESIZE_VARNAME(THISVARIDXTYPE);
 
 
