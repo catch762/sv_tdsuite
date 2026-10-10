@@ -269,12 +269,12 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 
 
 
-#define GETMETA(STRTYPE) 		STRMETA_ ## STRTYPE
+#define GETMETA(STRTYPE) 		TYPEMETA_ ## STRTYPE
 
 
 
 #define ui(data_for_cpp_to_parse) 
-#define STRDECL(STRTYPE) 		GETMETA(STRTYPE)(DECLSTRUCT, ~, ~, 0)				\
+#define SUP_STRDECL(STRTYPE) 		GETMETA(STRTYPE)(DECLSTRUCT, ~, ~, 0)				\
 								GETMETA(STRTYPE)(SAVETYPESIZE, ~, ~, 0)			\
 								GETMETA(STRTYPE)(SAVEFIRSTMEMBEROFFSET, ~, ~, 0)	\
 								GETMETA(STRTYPE)(SAVENEXTMEMBEROFFSETS, ~, ~, 0)
@@ -369,18 +369,18 @@ float out_simple();
 
 
 
-#define STRMETA_Inner(V,N,I,L) TYPEMAIN(2,L)(Inner,V,N,I,\
+#define TYPEMETA_Inner(V,N,I,L) TYPEMAIN(2,L)(Inner,V,N,I,\
 vec4, 	aaa,	\
 float, 	bbb)
-STRDECL(Inner)
+SUP_STRDECL(Inner)
 
-#define STRMETA_Outer(V,N,I,L) TYPEMAIN(2,L)(Outer,V,N,I,\
+#define TYPEMETA_Outer(V,N,I,L) TYPEMAIN(2,L)(Outer,V,N,I,\
 Inner, 	a,				\
 float, 	simple)
-STRDECL(Outer)
+SUP_STRDECL(Outer)
 
 //Unfortunately we have to.
-#define SUP_CUSTOMTYPESLIST(F) \
+#define SUP_LIST_OF_ALL_STRUCT_TYPES_USED_IN_VARLIST(F) \
 	F(Inner)\
 	F(Outer)
 
@@ -389,7 +389,7 @@ STRDECL(Outer)
 
 //just to convey meaning better
 #define FOR_EACH_VARLIST_ENTRY(FUNCVISITOR) SUP_VARLIST(FUNCVISITOR)
-#define FOR_EACH_CUSTOMTYPE(FUNCVISITOR) SUP_CUSTOMTYPESLIST(FUNCVISITOR)
+#define FOR_EACH_CUSTOMTYPE(FUNCVISITOR) SUP_LIST_OF_ALL_STRUCT_TYPES_USED_IN_VARLIST(FUNCVISITOR)
 
 #define PLUS_SIZE_OF_VARLIST_ENTRY(varidx, STRTYPE, strname) + TYPESIZE_VARNAME(STRTYPE)
 
@@ -462,14 +462,14 @@ FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 
 //This is needed for MAKEGETTERS macros (meaning of this, when we hit a native
 //type, we do nothing and dont try to look at its members)
-#define STRMETA_float(V,N,I,L) 	TYPEMAIN(0,L)(float,V,N,I)
-#define STRMETA_vec2(V,N,I,L) 	TYPEMAIN(0,L)(vec2,	V,N,I)
-#define STRMETA_vec3(V,N,I,L) 	TYPEMAIN(0,L)(vec3,	V,N,I)
-#define STRMETA_vec4(V,N,I,L) 	TYPEMAIN(0,L)(vec4,	V,N,I)
-#define STRMETA_int(V,N,I,L) 	TYPEMAIN(0,L)(int,	V,N,I)
-#define STRMETA_ivec2(V,N,I,L)	TYPEMAIN(0,L)(ivec2,V,N,I)
-#define STRMETA_ivec3(V,N,I,L)	TYPEMAIN(0,L)(ivec3,V,N,I)
-#define STRMETA_ivec4(V,N,I,L)	TYPEMAIN(0,L)(ivec4,V,N,I)
+#define TYPEMETA_float(V,N,I,L) 	TYPEMAIN(0,L)(float,V,N,I)
+#define TYPEMETA_vec2(V,N,I,L) 	TYPEMAIN(0,L)(vec2,	V,N,I)
+#define TYPEMETA_vec3(V,N,I,L) 	TYPEMAIN(0,L)(vec3,	V,N,I)
+#define TYPEMETA_vec4(V,N,I,L) 	TYPEMAIN(0,L)(vec4,	V,N,I)
+#define TYPEMETA_int(V,N,I,L) 	TYPEMAIN(0,L)(int,	V,N,I)
+#define TYPEMETA_ivec2(V,N,I,L)	TYPEMAIN(0,L)(ivec2,V,N,I)
+#define TYPEMETA_ivec3(V,N,I,L)	TYPEMAIN(0,L)(ivec3,V,N,I)
+#define TYPEMETA_ivec4(V,N,I,L)	TYPEMAIN(0,L)(ivec4,V,N,I)
 
 #define CATNAMEPATH_INNER(NAMEPATH, MEMBERNAME) NAMEPATH ## _ ## MEMBERNAME
 #define CATNAMEPATH(NAMEPATH, MEMBERNAME) CATNAMEPATH_INNER(NAMEPATH, MEMBERNAME)
