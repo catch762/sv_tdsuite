@@ -363,7 +363,7 @@ float out_simple();
 
 
 
-
+//issue is, you need arg0 version of strmain and native types use it.
 
 
 
@@ -439,7 +439,7 @@ FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 
 
 
-//issue is, you need arg0 version of strmain and native types use it.
+
 
 
 
@@ -462,14 +462,14 @@ FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 
 //This is needed for MAKEGETTERS macros (meaning of this, when we hit a native
 //type, we do nothing and dont try to look at its members)
-#define STRMETA_float(V,N,I,L)
-#define STRMETA_vec2(V,N,I,L)
-#define STRMETA_vec3(V,N,I,L)
-#define STRMETA_vec4(V,N,I,L)
-#define STRMETA_int(V,N,I,L)
-#define STRMETA_ivec2(V,N,I,L)
-#define STRMETA_ivec3(V,N,I,L)
-#define STRMETA_ivec4(V,N,I,L)
+#define STRMETA_float(V,N,I,L) 	TYPEMAIN(0,L)(float,V,N,I)
+#define STRMETA_vec2(V,N,I,L) 	TYPEMAIN(0,L)(vec2,	V,N,I)
+#define STRMETA_vec3(V,N,I,L) 	TYPEMAIN(0,L)(vec3,	V,N,I)
+#define STRMETA_vec4(V,N,I,L) 	TYPEMAIN(0,L)(vec4,	V,N,I)
+#define STRMETA_int(V,N,I,L) 	TYPEMAIN(0,L)(int,	V,N,I)
+#define STRMETA_ivec2(V,N,I,L)	TYPEMAIN(0,L)(ivec2,V,N,I)
+#define STRMETA_ivec3(V,N,I,L)	TYPEMAIN(0,L)(ivec3,V,N,I)
+#define STRMETA_ivec4(V,N,I,L)	TYPEMAIN(0,L)(ivec4,V,N,I)
 
 #define CATNAMEPATH_INNER(NAMEPATH, MEMBERNAME) NAMEPATH ## _ ## MEMBERNAME
 #define CATNAMEPATH(NAMEPATH, MEMBERNAME) CATNAMEPATH_INNER(NAMEPATH, MEMBERNAME)
