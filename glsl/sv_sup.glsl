@@ -132,6 +132,11 @@ vec4  copyOf_nativeVec 	= nativeVec();
 
 #ifdef SOME_NOTES_ON_IMPLEMENTATION_DETAILS_AND_TROUBLESHOOTING_AND_TODO
 /*
+	0. Implementation is based on assumption that aggressive inlining will optimize
+	away all the functions for accessing struct instances; otherwise im fucked.
+	The more specific your access function calls are, the better, anyway. Probably.
+	(i mean, dont request large struct to copy one field, just call that field accessor)
+
 	1. Array type
 	
 	You may have noticed: wait, the array is vec4 sup_data[].
