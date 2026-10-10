@@ -260,11 +260,11 @@ vec4  copyOf_nativeVec 	= nativeVec();
 
 #ifndef SUP_SECTION_MACRO_OPERATIONS_ON_STRUCT_AND_ITS_MEMBERS
 //*************************************************************************
-// So, there is a struct, and we do various things with it.
+// So, there is a type (primitive or struct), and we do various things with it.
 // As you can see below, all operations are defined by providing 3 macros:
 //
 // BEG_yourOperation(...) -- called once in beginning
-// MEM_yourOperation(...) -- called for each member variable of the struct
+// MEM_yourOperation(...) -- called for each member variable of the struct (unless its primitive type like float)
 // END_yourOperation(...) -- called once in the end
 //
 // Ofcourse, you have to include all arguments, even if you dont use them.
@@ -275,6 +275,8 @@ vec4  copyOf_nativeVec 	= nativeVec();
 // See cases below.
 // Lowercase args stand for unused.
 // By the way, pass ~ for unused argument (just a convention)
+//
+// Typically arg is called STRTYPE, but this is also potentially used with primitive types like float.
 //
 //*************************************************************************
 
