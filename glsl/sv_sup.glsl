@@ -1,11 +1,44 @@
+//***********************************
+// SUP, or Sv Uniform Protocol module
+// Dependencies: none.
+//***********************************
+
+#ifdef EXPLANATION_OF_WHAT_IT_DOES_AND_USAGE_EXAMPLE
+
+// Consider you have following shader data:
+
+struct Inner
+{
+	vec4 aaa;
+	vec4 bbb;
+}
+
+struct Outer
+{
+	Inner inn;
+	float simpleVar;
+}
+
+uniform Outer myStruct;
+uniform vec4 nativeVec;
+
+// What if you wanted to set this uniform data externally?
+// Well, its easy to do it in any language via uniform locations / uniform buffer objects / whatever.
+//
+// However, in Touchdesigner shader host, the options are:
+//	- Setup every single field by hand via UI (im not doing this)
+//	- Declare a single uniform array of floats and map your structs to using
+//	  an absolutely nightmarish set of preprocessor macros.
+//
+// So thats what we are gonna do.
+//
+// We are gonna declare a single uniform array of floats and map our structs to it using 
+// an absolutely nightmarish set of preprocessor macros.
 
 
+#endif
 
 //maybe map to float arr after all?
-
-//**************************************************
-// SUP, or Svvvvyungbepis's Uniform Protocol library
-//**************************************************
 
 float 	sup_as_float	(vec4 v) {return v.x;	}
 vec2 	sup_as_vec2		(vec4 v) {return v.xy;	}
@@ -31,7 +64,7 @@ ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
 //*************************************************
 // This will be moved to sv_preprocessor.glsl later
 //*************************************************
-#ifndef SV_PREPROCESSOR_SECTION
+#ifndef SUP_PREPROCESSOR_SECTION
 
 #define SUP_EVAL(x) x
 
