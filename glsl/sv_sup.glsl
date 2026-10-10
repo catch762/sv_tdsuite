@@ -1,5 +1,5 @@
-//todo rename strmeta to typemeta
-
+//todo sup_lighting use list of module
+//maybe map to float arr after all?
 
 //**************************************************
 // SUP, or Svvvvyungbepis's Uniform Protocol library
@@ -183,10 +183,10 @@ SAVE_NATIVE_TYPE_SIZE(ivec4)
 /*
 exec("""
 membercountfrom = 0
-membercountto = 4
+membercountto = 20
 
 levelfrom = 0
-levelto = 2
+levelto = 4
 
 begline = "BEG_ ## V(T, N, I) "
 
@@ -226,6 +226,38 @@ for level in range(levelfrom, levelto+1):
 
 #define TYPEMAIN_4MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  END_ ## V(T, 4)
 
+#define TYPEMAIN_5MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  END_ ## V(T, 5)
+
+#define TYPEMAIN_6MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  END_ ## V(T, 6)
+
+#define TYPEMAIN_7MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  END_ ## V(T, 7)
+
+#define TYPEMAIN_8MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  END_ ## V(T, 8)
+
+#define TYPEMAIN_9MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  END_ ## V(T, 9)
+
+#define TYPEMAIN_10MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  END_ ## V(T, 10)
+
+#define TYPEMAIN_11MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  END_ ## V(T, 11)
+
+#define TYPEMAIN_12MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  END_ ## V(T, 12)
+
+#define TYPEMAIN_13MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  END_ ## V(T, 13)
+
+#define TYPEMAIN_14MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  END_ ## V(T, 14)
+
+#define TYPEMAIN_15MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  END_ ## V(T, 15)
+
+#define TYPEMAIN_16MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  END_ ## V(T, 16)
+
+#define TYPEMAIN_17MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  END_ ## V(T, 17)
+
+#define TYPEMAIN_18MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  END_ ## V(T, 18)
+
+#define TYPEMAIN_19MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  END_ ## V(T, 19)
+
+#define TYPEMAIN_20MEMBERS_L0(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18, T19, N19) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  MEM_ ## V(T, T19, N19, N, 19, I)  END_ ## V(T, 20)
+
 #define TYPEMAIN_0MEMBERS_L1(T, V, N, I) BEG_ ## V(T, N, I) END_ ## V(T, 0)
 
 #define TYPEMAIN_1MEMBERS_L1(T, V, N, I, T0, N0) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  END_ ## V(T, 1)
@@ -235,6 +267,38 @@ for level in range(levelfrom, levelto+1):
 #define TYPEMAIN_3MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  END_ ## V(T, 3)
 
 #define TYPEMAIN_4MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  END_ ## V(T, 4)
+
+#define TYPEMAIN_5MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  END_ ## V(T, 5)
+
+#define TYPEMAIN_6MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  END_ ## V(T, 6)
+
+#define TYPEMAIN_7MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  END_ ## V(T, 7)
+
+#define TYPEMAIN_8MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  END_ ## V(T, 8)
+
+#define TYPEMAIN_9MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  END_ ## V(T, 9)
+
+#define TYPEMAIN_10MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  END_ ## V(T, 10)
+
+#define TYPEMAIN_11MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  END_ ## V(T, 11)
+
+#define TYPEMAIN_12MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  END_ ## V(T, 12)
+
+#define TYPEMAIN_13MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  END_ ## V(T, 13)
+
+#define TYPEMAIN_14MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  END_ ## V(T, 14)
+
+#define TYPEMAIN_15MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  END_ ## V(T, 15)
+
+#define TYPEMAIN_16MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  END_ ## V(T, 16)
+
+#define TYPEMAIN_17MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  END_ ## V(T, 17)
+
+#define TYPEMAIN_18MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  END_ ## V(T, 18)
+
+#define TYPEMAIN_19MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  END_ ## V(T, 19)
+
+#define TYPEMAIN_20MEMBERS_L1(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18, T19, N19) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  MEM_ ## V(T, T19, N19, N, 19, I)  END_ ## V(T, 20)
 
 #define TYPEMAIN_0MEMBERS_L2(T, V, N, I) BEG_ ## V(T, N, I) END_ ## V(T, 0)
 
@@ -246,7 +310,121 @@ for level in range(levelfrom, levelto+1):
 
 #define TYPEMAIN_4MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  END_ ## V(T, 4)
 
+#define TYPEMAIN_5MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  END_ ## V(T, 5)
 
+#define TYPEMAIN_6MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  END_ ## V(T, 6)
+
+#define TYPEMAIN_7MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  END_ ## V(T, 7)
+
+#define TYPEMAIN_8MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  END_ ## V(T, 8)
+
+#define TYPEMAIN_9MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  END_ ## V(T, 9)
+
+#define TYPEMAIN_10MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  END_ ## V(T, 10)
+
+#define TYPEMAIN_11MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  END_ ## V(T, 11)
+
+#define TYPEMAIN_12MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  END_ ## V(T, 12)
+
+#define TYPEMAIN_13MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  END_ ## V(T, 13)
+
+#define TYPEMAIN_14MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  END_ ## V(T, 14)
+
+#define TYPEMAIN_15MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  END_ ## V(T, 15)
+
+#define TYPEMAIN_16MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  END_ ## V(T, 16)
+
+#define TYPEMAIN_17MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  END_ ## V(T, 17)
+
+#define TYPEMAIN_18MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  END_ ## V(T, 18)
+
+#define TYPEMAIN_19MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  END_ ## V(T, 19)
+
+#define TYPEMAIN_20MEMBERS_L2(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18, T19, N19) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  MEM_ ## V(T, T19, N19, N, 19, I)  END_ ## V(T, 20)
+
+#define TYPEMAIN_0MEMBERS_L3(T, V, N, I) BEG_ ## V(T, N, I) END_ ## V(T, 0)
+
+#define TYPEMAIN_1MEMBERS_L3(T, V, N, I, T0, N0) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  END_ ## V(T, 1)
+
+#define TYPEMAIN_2MEMBERS_L3(T, V, N, I, T0, N0, T1, N1) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  END_ ## V(T, 2)
+
+#define TYPEMAIN_3MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  END_ ## V(T, 3)
+
+#define TYPEMAIN_4MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  END_ ## V(T, 4)
+
+#define TYPEMAIN_5MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  END_ ## V(T, 5)
+
+#define TYPEMAIN_6MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  END_ ## V(T, 6)
+
+#define TYPEMAIN_7MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  END_ ## V(T, 7)
+
+#define TYPEMAIN_8MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  END_ ## V(T, 8)
+
+#define TYPEMAIN_9MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  END_ ## V(T, 9)
+
+#define TYPEMAIN_10MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  END_ ## V(T, 10)
+
+#define TYPEMAIN_11MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  END_ ## V(T, 11)
+
+#define TYPEMAIN_12MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  END_ ## V(T, 12)
+
+#define TYPEMAIN_13MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  END_ ## V(T, 13)
+
+#define TYPEMAIN_14MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  END_ ## V(T, 14)
+
+#define TYPEMAIN_15MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  END_ ## V(T, 15)
+
+#define TYPEMAIN_16MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  END_ ## V(T, 16)
+
+#define TYPEMAIN_17MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  END_ ## V(T, 17)
+
+#define TYPEMAIN_18MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  END_ ## V(T, 18)
+
+#define TYPEMAIN_19MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  END_ ## V(T, 19)
+
+#define TYPEMAIN_20MEMBERS_L3(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18, T19, N19) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  MEM_ ## V(T, T19, N19, N, 19, I)  END_ ## V(T, 20)
+
+#define TYPEMAIN_0MEMBERS_L4(T, V, N, I) BEG_ ## V(T, N, I) END_ ## V(T, 0)
+
+#define TYPEMAIN_1MEMBERS_L4(T, V, N, I, T0, N0) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  END_ ## V(T, 1)
+
+#define TYPEMAIN_2MEMBERS_L4(T, V, N, I, T0, N0, T1, N1) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  END_ ## V(T, 2)
+
+#define TYPEMAIN_3MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  END_ ## V(T, 3)
+
+#define TYPEMAIN_4MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  END_ ## V(T, 4)
+
+#define TYPEMAIN_5MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  END_ ## V(T, 5)
+
+#define TYPEMAIN_6MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  END_ ## V(T, 6)
+
+#define TYPEMAIN_7MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  END_ ## V(T, 7)
+
+#define TYPEMAIN_8MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  END_ ## V(T, 8)
+
+#define TYPEMAIN_9MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  END_ ## V(T, 9)
+
+#define TYPEMAIN_10MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  END_ ## V(T, 10)
+
+#define TYPEMAIN_11MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  END_ ## V(T, 11)
+
+#define TYPEMAIN_12MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  END_ ## V(T, 12)
+
+#define TYPEMAIN_13MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  END_ ## V(T, 13)
+
+#define TYPEMAIN_14MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  END_ ## V(T, 14)
+
+#define TYPEMAIN_15MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  END_ ## V(T, 15)
+
+#define TYPEMAIN_16MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  END_ ## V(T, 16)
+
+#define TYPEMAIN_17MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  END_ ## V(T, 17)
+
+#define TYPEMAIN_18MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  END_ ## V(T, 18)
+
+#define TYPEMAIN_19MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  END_ ## V(T, 19)
+
+#define TYPEMAIN_20MEMBERS_L4(T, V, N, I, T0, N0, T1, N1, T2, N2, T3, N3, T4, N4, T5, N5, T6, N6, T7, N7, T8, N8, T9, N9, T10, N10, T11, N11, T12, N12, T13, N13, T14, N14, T15, N15, T16, N16, T17, N17, T18, N18, T19, N19) BEG_ ## V(T, N, I) MEM_ ## V(T, T0, N0, N, 0, I)  MEM_ ## V(T, T1, N1, N, 1, I)  MEM_ ## V(T, T2, N2, N, 2, I)  MEM_ ## V(T, T3, N3, N, 3, I)  MEM_ ## V(T, T4, N4, N, 4, I)  MEM_ ## V(T, T5, N5, N, 5, I)  MEM_ ## V(T, T6, N6, N, 6, I)  MEM_ ## V(T, T7, N7, N, 7, I)  MEM_ ## V(T, T8, N8, N, 8, I)  MEM_ ## V(T, T9, N9, N, 9, I)  MEM_ ## V(T, T10, N10, N, 10, I)  MEM_ ## V(T, T11, N11, N, 11, I)  MEM_ ## V(T, T12, N12, N, 12, I)  MEM_ ## V(T, T13, N13, N, 13, I)  MEM_ ## V(T, T14, N14, N, 14, I)  MEM_ ## V(T, T15, N15, N, 15, I)  MEM_ ## V(T, T16, N16, N, 16, I)  MEM_ ## V(T, T17, N17, N, 17, I)  MEM_ ## V(T, T18, N18, N, 18, I)  MEM_ ## V(T, T19, N19, N, 19, I)  END_ ## V(T, 20)
 
 
 //******************AUTOGENERATED WITH PYTHON*************************
@@ -368,7 +546,7 @@ float out_simple();
 
 
 
-
+/*
 #define TYPEMETA_Inner(V,N,I,L) TYPEMAIN(2,L)(Inner,V,N,I,\
 vec4, 	aaa,	\
 float, 	bbb)
@@ -378,14 +556,12 @@ SUP_STRDECL(Inner)
 Inner, 	a,				\
 float, 	simple)
 SUP_STRDECL(Outer)
+*/
 
 //Unfortunately we have to.
-#define SUP_LIST_OF_ALL_STRUCT_TYPES_USED_IN_VARLIST(F) \
-	F(Inner)\
-	F(Outer)
+//#define SUP_LIST_OF_ALL_STRUCT_TYPES_USED_IN_VARLIST(F) F(Inner) F(Outer)
 
-#define SUP_VARLIST(F) \
-	F(0, Outer, outx)
+//#define SUP_VARLIST(F) F(0, Outer, outx)
 
 //just to convey meaning better
 #define FOR_EACH_VARLIST_ENTRY(FUNCVISITOR) SUP_VARLIST(FUNCVISITOR)
@@ -394,10 +570,10 @@ SUP_STRDECL(Outer)
 #define PLUS_SIZE_OF_VARLIST_ENTRY(varidx, STRTYPE, strname) + TYPESIZE_VARNAME(STRTYPE)
 
 
-const int entireVarlistSize = FOR_EACH_VARLIST_ENTRY(PLUS_SIZE_OF_VARLIST_ENTRY);
+#define SUP_VARLIST_SIZE ( FOR_EACH_VARLIST_ENTRY(PLUS_SIZE_OF_VARLIST_ENTRY) )
 
 //everything goes through this
-uniform vec4 sup_data[entireVarlistSize];
+//uniform vec4 sup_data[SUP_VARLIST_SIZE];
 
 #ifndef GETVARATINDEX_for_native
 
@@ -417,44 +593,14 @@ uniform vec4 sup_data[entireVarlistSize];
 		return sup_as_ ## TYPE (sup_data[supDataIndex]);\
 	}
 
-FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)
+//FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)
 
 #endif
 			
 #define MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE(STRTYPE) 	\
 	GETMETA(STRTYPE)(MAKEGETVARATINDEXFUNC, ~, ~, 0)
 
-FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 
 
 
@@ -536,9 +682,9 @@ FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)
 			
 //MAKE_GETTER_FUNC(STRTYPE, STRNAME, VARSUPDATAIDX_VARNAME_FIN(VARIDX))			
 
-FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
+//FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
 
-vec4 ok = outx_a_aaa();
+//vec4 ok = outx_a_aaa();
 
 
 

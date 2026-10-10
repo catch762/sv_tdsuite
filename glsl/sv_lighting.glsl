@@ -10,11 +10,11 @@
 //*************************************************
 
 //The Blinn-phong material
-#define STRMETA_BPM(V,N) STRMAIN_ARG3(BPM,V,N,		\
+#define TYPEMETA_BPM(V,N,I,L) TYPEMAIN(3,L)(BPM,V,N,I,\
 vec4, 	basecolor,				ui("color = []")	\
 vec4, 	speccolor,				ui("color = []")	\
 vec2, 	RoughnessRefraction)	ui("lims=[0, 2, 1]")	
-STRDECL(BPM)
+SUP_STRDECL(BPM)
 
 vec3 bpm_lighting(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, float kn)
 {
@@ -62,11 +62,11 @@ vec3 bpm_lighting(vec3 normal, vec3 raydir, vec3 lightdir, vec3 lightcolor, BPM 
 // Part 2: Some common code for lighting. Controversial and subject to change.
 //****************************************************************************
 
-#define STRMETA_Light(V,N) STRMAIN_ARG3(Light,V,N,							\
+#define TYPEMETA_Light(V,N,I,L) TYPEMAIN(3,L)(Light,V,N,I,\
 vec4, 	pos,			ui("lims=[[-1,1,0], [-1,1,0], [-1,1,0], [-1,1,1]]")	\
 vec2, 	RadiusIntensity,ui("lims=[[0.5, 2, 2], [0, 25, 5]]")				\
 vec4, 	color)			ui("color = []")
-STRDECL(Light)
+SUP_STRDECL(Light)
 
 float light_rangefactor(vec3 lightpos, float lightradius, vec3 p)
 {
@@ -140,11 +140,16 @@ float getObstacleFactoredLight01(float hit11_toObstacle, vec2 obstacleLightModRa
 			bpm_lighting(n, raydir, dir2light, mulw(light.color) * rangeintensity, bpm);	\
 	}
 
-#define STRMETA_Lightgrid(V,N) STRMAIN_ARG3(Lightgrid,V,N,\
+#define TYPEMETA_Lightgrid(V,N,I,L) TYPEMAIN(3,L)(Lightgrid,V,N,I,\
 vec4, 	cellsize,		ui("lims = [0, 1, 0.5]"	)\
 vec4, 	wiggleroom01,	ui("lims = [0, 1, 0]"	)\
 float, 	indivspacing01)	ui("lims = [0, 1, 1], tip = 'at 0 all cells will use same safe radius based on wiggleroom, at 1 it it will look at wiggled pos of each cell and see how much space left'")
-STRDECL(Lightgrid)
+SUP_STRDECL(Lightgrid)
+
+#define SV_LIGHTING_STRUCT_TYPES(F) \
+			F(BPM)\
+			F(Light)\
+			F(Lightgrid)
 
 vec3 lightcell_seed11(ivec3 idx)
 {
