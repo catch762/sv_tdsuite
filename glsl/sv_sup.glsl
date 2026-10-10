@@ -1,6 +1,6 @@
 
 
-//todo sup_lighting use list of module
+
 //maybe map to float arr after all?
 
 //**************************************************
@@ -678,17 +678,19 @@ SUP_STRDECL(Outer)
 
 
 
+
 #endif
 
 
 
 
 
+#define SUP_INITIALIZE_VARLIST 														\
+			uniform vec4 sup_data[SUP_VARLIST_SIZE];								\
+			FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)	\
+			FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)			\
+			FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
 
 
 
 
-
-
-
-//i stopped at: its better but MEM_MAKEGETTERS_L1 not evaled, this can be fixed
