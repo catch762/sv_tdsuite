@@ -3,7 +3,7 @@
 // Dependencies: none.
 //***********************************
 
-#ifdef EXPLANATION_OF_WHAT_IT_DOES_AND_USAGE_EXAMPLE
+#ifdef EXPLANATION_OF_WHAT_THIS_MODULE_DOES
 
 // Consider you have following shader data:
 
@@ -28,15 +28,105 @@ uniform vec4 nativeVec;
 // However, in Touchdesigner shader host, the options are:
 //	- Setup every single field by hand via UI (im not doing this)
 //	- Declare a single uniform array of floats and map your structs to using
-//	  an absolutely nightmarish set of preprocessor macros.
+//	  absolutely nightmarish set of preprocessor macros.
 //
-// So thats what we are gonna do.
+// So thats what we are gonna do in this module.
 //
 // We are gonna declare a single uniform array of floats and map our structs to it using 
-// an absolutely nightmarish set of preprocessor macros.
+// absolutely nightmarish set of preprocessor macros.
+//
+// (And ofcourse, this means that you need to make a tool which actually fills in this array data. My tool for this
+// is a C++ Qt app sv_qtouch; but talking about it is mostly irrelevant. All the shader cares about is that
+// there is a float array, and that structs are correctly mapped to it.)
+//
+// That said, i also have to mention: my QTouch app, mentioned above, parses the glsl code which uses this module,
+// in order to recreate this data in C++ in order to create UI for this data and fill that array of floats.
+// Therefore, a secondary, very minor objective of this sv_sup module, is to make sure our data is declared in a way,
+// that when we parse this shader code in our C++ app, we can obtain all the information that interests us.
+// This aspect is not really present in how preprocessor logic itself works, it is defined by certain code style/formatting rules.
+//
+// So, head over to the next section and see how it all works.
+#endif
+
+//Im putting this example here, because this reading order makes sense, but obviously, 
+//it will only work after all the content of this file is included first
+#ifdef EXAMPLE_OF_HOW_THIS_MODULE_IMPLEMENTS_HYPOTHETICAL_EXAMPLE_FROM_SECTION_ABOVE
+
+// This is entirely optional section. Yes, its in the comments. The comments will be parsed by C++.
+// The idea is, later on, you will include some metadata for widgets for data.
+// E.g. you declare a float, and you will want to include metadata with the meaning 
+// "when UI widget is made for this float, i want its min=10, max=100 and default value=50"
+// 
+// But what if you want to make some named constant and refer to it in these metadata description?
+// This is the section that contains these constants.
+//
+// What data exactly and what format is expected here - thats defined by QTouch, and is out of scope
+// of this documentation. Data format may change and this example section might be outdated.
+// Here I just wanted to explain, what this section is for, roughly.
+
+/*
+SUP_ADDTODICT_BEGIN
+myLimits = [10, 100, 50]
+SUP_ADDTODICT_END
+*/
+
+//First, declare the structs:
+
+//[!] this '2' on first line means '2 member variables in the struct'
+//[!] keep it same style: one variable per line, no empty lines. This is requirement of QTouch parser, nothing else.
+#define TYPEMETA_Inner(V,N,I,L) TYPEMAIN(2,L)(Inner,V,N,I,	\
+vec4, 	aaa,												\
+vec4,	bbb) 	
+SUP_STRDECL(Inner) 
+
+//Note the optional ui("") macro, it expands to nothing, is only parsed by QTouch,
+//and is interpreted by widget for that variable on the same line.
+#define TYPEMETA_Outer(V,N,I,L) TYPEMAIN(2,L)(Outer,V,N,I,	\
+Inner, 	inn,												\
+float,	simpleVar) 	ui("lims = myLimits")
+SUP_STRDECL(Outer) 
+
+//We have to define macro with this name, and list all struct types that is
+//used in varlist, including nested types.
+//
+//[!] Btw, this form allows you to concatenate lists this way,
+//	  e.g. you can add simillar macro TYPES_OF_SOME_SUBMODULE(F) and simply include it here once.
+#define SUP_LIST_OF_ALL_STRUCT_TYPES_USED_IN_VARLIST(F) \
+	F(Inner)\
+	F(Outer)
+
+//This, the varlist, lists all our data. Of native types and of types we declared above.
+//
+//SUP_VARS_BEGIN, SUP_VARS_END macros dont do anything, they are included just to help QTouch parser
+//find the data.
+//
+// [!] every variable entry must begin with its index, F(0, ...) F(1, ...) F(2, ...) and so on.
+//
+// Also note how we can have ui("") macros here as well.
+#define SUP_VARLIST(F)	\
+		SUP_VARS_BEGIN	\
+		F(0,  Outer, myStruct)\
+		F(1,  vec4, nativeVec) ui("some metadata for UI widget for this variable")\
+		SUP_VARS_END
+
+//What this macro does is:
+//	- calculates total size of data in SUP_VARLIST
+//	- creates the array: uniform vec4 sup_data[SUP_VARLIST_SIZE];
+//	- creates function which take offset in that array and return variable
+//	  of each type, reading them from that offset. Its called internally, but FYI.
+//	- creates functions to access every variable in SUP_VARLIST; see just below
+SUP_INITIALIZE_VARLIST
+
+//So, the auto-created functions to access variables from SUP_VARLIST:
+//Note how this includes all members through underscore, and all members of members, and so on.
+Outer copyOf_myStruct 	= myStruct();
+Inner member_inn 			= myStruct_inn();
+float member_simpleVar 		= myStruct_simpleVar();
+vec4  copyOf_nativeVec 	= nativeVec();
 
 
 #endif
+
 
 //maybe map to float arr after all?
 
