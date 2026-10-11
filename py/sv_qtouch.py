@@ -319,11 +319,18 @@ class QTouchTcpConnection:
 			op_vardata.appendCol(packet.var_names)
 		
 		# However, for float values, we just update cells individually
-		new_vardata_rows = []
+		#new_vardata_rows = []
+		#for i in range(len(packet.float_values)):
+		#	var_index = packet.first_index + i
+		#	float_value = packet.float_values[i]
+		#	op_vardata[var_index, 1] = float_value
+		
+		valuesColumn = op_vardata.col(1, val=True)
 		for i in range(len(packet.float_values)):
 			var_index = packet.first_index + i
 			float_value = packet.float_values[i]
-			op_vardata[var_index, 1] = float_value
+			valuesColumn[var_index] = float_value
+		op_vardata.replaceCol(1, valuesColumn)
 		
 		print("processTreeDataPacket finished.") 
 	
