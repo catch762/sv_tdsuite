@@ -32,9 +32,9 @@ class TreeDataWithVarNamesPacketContent:
 	float_values: list[float]
 
 class UsedOpNames:
-	DatWithVarNames = "varnames"
+	#DatWithVarNames = "varnames"
 	DatWithQtouchVec4Vars = "qtouch_vardata"
-	DatWithQtouchVec4Vars_Temp = "qtouch_vardata_tmp"
+	#DatWithQtouchVec4Vars_Temp = "qtouch_vardata_tmp"
 	TcpIpDat = "qtouch_tcpip_connection"
 	DatWithConnectionState = "qtouch_connection_state"
 	DatWithGLSLFilesToParse = "sup_glsl_files"
@@ -295,59 +295,33 @@ class QTouchTcpConnection:
 	def processTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
 		packet: TreeDataWithVarNamesPacketContent = self.parseTreeDataPacket(contentBlock, with_var_names)
 		
-		#print(f"parseTreeDataPacket result is: {packet}")
+		print(f"parseTreeDataPacket result is: {packet}")
 		
-		op_varnames = sv.proj_op(UsedOpNames.DatWithVarNames)
-		assert op_varnames
+		#op_varnames = sv.proj_op(UsedOpNames.DatWithVarNames)
+		#assert op_varnames
 		
 		op_vardata = sv.proj_op(UsedOpNames.DatWithQtouchVec4Vars)
 		assert op_vardata
 		
-		op_vardata_TEMP = sv.proj_op(UsedOpNames.DatWithQtouchVec4Vars_Temp)
-		assert op_vardata_TEMP
+		#op_vardata_TEMP = sv.proj_op(UsedOpNames.DatWithQtouchVec4Vars_Temp)
+		#assert op_vardata_TEMP
 		
+		packetHoldsEverything = packet.first_index == 0 and packet.last_index == packet.total_entries-1
 		
-		####################
-		# <SAVE VAR NAMES> #
-		####################
+		assert packet.last_index - packet.first_index + 1 == len(packet.float_values), "brooooo"
+		
+		# If there are varnames, we reset entire table and write all names in first column
 		if with_var_names:
-			op_varnames.clear()
-			for var_name in packet.var_names:
-				op_varnames.appendRow(var_name)
-		#####################
-		# </SAVE VAR NAMES> #
-		#####################
+			assert packetHoldsEverything, "Packet has varnames, but doesnt contain entire vardata (its ok but you might have to upd code for this case)"		
+			op_vardata.clear()
+			op_vardata.appendCol(packet.var_names)
 		
-		
-		########################################
-		# <SAVE VAR DATA AND FORM FINAL TABLE> #
-		########################################
-		
-		assert op_varnames.numRows == packet.total_entries, f" existing varnames [{op_varnames.numRows}] != packet entries count [{packet.total_entries}] ! packet varnames count [{len(packet.var_names)}]"
-		
+		# However, for float values, we just update cells individually
 		new_vardata_rows = []
 		for i in range(len(packet.float_values)):
 			var_index = packet.first_index + i
-			var_name = op_varnames[var_index, 0].val
 			float_value = packet.float_values[i]
-			new_vardata_rows.append([var_name, float_value])
-		
-		# this whole thing is supposed to be efficient, cause its one copy operation on final node.
-		# we dont want to jerk final node more than once
-		op_vardata_TEMP.copy(op_vardata)
-		
-		if op_vardata_TEMP.numRows != packet.total_entries:
-			op_vardata_TEMP.setSize(packet.total_entries, op_vardata_TEMP.numCols)
-		
-		for i in range(len(new_vardata_rows)):
-			index = packet.first_index + i
-			op_vardata_TEMP.replaceRow(index, new_vardata_rows[i])
-		op_vardata.copy(op_vardata_TEMP)
-		
-		#########################################
-		# </SAVE VAR DATA AND FORM FINAL TABLE> #
-		#########################################
-		
+			op_vardata[var_index, 1] = float_value
 		
 		print("processTreeDataPacket finished.") 
 	
