@@ -6,6 +6,7 @@ from typing import Optional
 import struct
 from dataclasses import dataclass
 import sv
+from datetime import datetime
 
 class PacketType(IntEnum):
 	"""Must match C++ enum PacketType, obviously"""
@@ -50,7 +51,7 @@ class QTouchTcpConnection:
 		self.packetHandlers[PacketType.RequestGlslFiles] = self.onGlslFilesRequested
 		
 		self.clientsConnected = 0
-
+		self.treesReceived = 0
 	######################################
 	# MIRRORING METHODS FROM TD TCP DAT: #
 	######################################
@@ -248,8 +249,9 @@ class QTouchTcpConnection:
 		return names, offset
 	
 	def parseTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
-		print(f"parseTreeDataPacket: processing contentBlock size = {len(contentBlock)} with_var_names = {with_var_names}")
+		print(f"parseTreeDataPacket: processing contentBlock size = {len(contentBlock)} with_var_names = {with_var_names} {datetime.now().time().isoformat(timespec='milliseconds')} -- trees: {self.treesReceived}")
 		offset = 0
+		self.treesReceived += 1
 		
 		preset_name, offset = self.read_string_section(contentBlock, offset)
 		total_entries, offset = self.read_u32(contentBlock, offset)
@@ -295,7 +297,7 @@ class QTouchTcpConnection:
 	def processTreeDataPacket(self, contentBlock: bytes, with_var_names : bool) -> TreeDataWithVarNamesPacketContent:
 		packet: TreeDataWithVarNamesPacketContent = self.parseTreeDataPacket(contentBlock, with_var_names)
 		
-		print(f"parseTreeDataPacket result is: {packet}")
+		#print(f"parseTreeDataPacket result is: {packet}")
 		
 		#op_varnames = sv.proj_op(UsedOpNames.DatWithVarNames)
 		#assert op_varnames
