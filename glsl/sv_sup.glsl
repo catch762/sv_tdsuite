@@ -306,9 +306,16 @@ vec4  copyOf_nativeVec 	= nativeVec();
 #define TYPESIZE_VARNAME(STRTYPE) STRTYPE ## _structsize
 
 //all native types fit in single vec4 entry
-#define SAVE_NATIVE_TYPE_SIZE(NATIVETYPE) const int TYPESIZE_VARNAME(NATIVETYPE) = 1;
+#define SAVE_NATIVE_TYPE_SIZE(NATIVETYPE, SIZE) const int TYPESIZE_VARNAME(NATIVETYPE) = SIZE;
 
-FOR_EACH_SUPPORTED_NATIVE_TYPE(SAVE_NATIVE_TYPE_SIZE)
+SAVE_NATIVE_TYPE_SIZE(float, 1)
+SAVE_NATIVE_TYPE_SIZE(vec2,  2)
+SAVE_NATIVE_TYPE_SIZE(vec3,  3)
+SAVE_NATIVE_TYPE_SIZE(vec4,  4)
+SAVE_NATIVE_TYPE_SIZE(int,   1)
+SAVE_NATIVE_TYPE_SIZE(ivec2, 2)
+SAVE_NATIVE_TYPE_SIZE(ivec3, 3)
+SAVE_NATIVE_TYPE_SIZE(ivec4, 4)
 
 
 #define BEG_SAVETYPESIZE(STRTYPE, strname, strdataidx)	\
@@ -681,6 +688,8 @@ for level in range(levelfrom, levelto+1):
 
 #ifndef SUP_CORE_LOGIC_PUTTING_IT_ALL_TOGETHER
 
+
+/*
 //Since every native variable is stored in vec4 in sup_data array, heres how we restore:
 float 	sup_as_float	(vec4 v) {return v.x;	}
 vec2 	sup_as_vec2		(vec4 v) {return v.xy;	}
@@ -690,6 +699,68 @@ int 	sup_as_int		(vec4 v) {return int(v.x + 0.5);			}
 ivec2 	sup_as_ivec2	(vec4 v) {return ivec2(v.xy + vec2(0.5));	}
 ivec3 	sup_as_ivec3	(vec4 v) {return ivec3(v.xyz + vec3(0.5));	}
 ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
+
+
+
+#define MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE(TYPE) 	\
+	TYPE GETVARATINDEX_FUNCNAME(TYPE) (int supDataIndex)\
+	{													\
+		return sup_as_ ## TYPE (sup_data[supDataIndex]);\
+	}
+*/
+
+//this has to be done after sup_data is declared 
+#define MAKE_GETVARATINDEX_FUNS_FOR_ALL_NATIVE_TYPES  	\
+float GETVARATINDEX_FUNCNAME(float) (int supDataIndex)	\
+{														\
+	return sup_data[supDataIndex];						\
+}														\
+vec2 GETVARATINDEX_FUNCNAME(vec2) (int supDataIndex)	\
+{														\
+	return vec2(sup_data[supDataIndex], 				\
+				sup_data[supDataIndex+1]);				\
+}														\
+vec3 GETVARATINDEX_FUNCNAME(vec3) (int supDataIndex)	\
+{														\
+	return vec3(sup_data[supDataIndex], 				\
+				sup_data[supDataIndex+1], 				\
+				sup_data[supDataIndex+2]);				\
+}														\
+vec4 GETVARATINDEX_FUNCNAME(vec4) (int supDataIndex)	\
+{														\
+	return vec4(sup_data[supDataIndex], 				\
+				sup_data[supDataIndex+1],				\
+				sup_data[supDataIndex+2],				\
+				sup_data[supDataIndex+3]);				\
+}														\
+int GETVARATINDEX_FUNCNAME(int) (int supDataIndex)		\
+{														\
+	return int(sup_data[supDataIndex] + 0.5);			\
+}														\
+ivec2 GETVARATINDEX_FUNCNAME(ivec2) (int supDataIndex)	\
+{														\
+	return ivec2(sup_data[supDataIndex]  + 0.5, 		\
+				 sup_data[supDataIndex+1]+ 0.5);		\
+}														\
+ivec3 GETVARATINDEX_FUNCNAME(ivec3) (int supDataIndex)	\
+{														\
+	return ivec3(sup_data[supDataIndex]  + 0.5, 		\
+				 sup_data[supDataIndex+1]+ 0.5, 		\
+				 sup_data[supDataIndex+2]+ 0.5);		\
+}														\
+ivec4 GETVARATINDEX_FUNCNAME(ivec4) (int supDataIndex)	\
+{														\
+	return ivec4(sup_data[supDataIndex]	 + 0.5, 		\
+				 sup_data[supDataIndex+1]+ 0.5,			\
+				 sup_data[supDataIndex+2]+ 0.5,			\
+				 sup_data[supDataIndex+3]+ 0.5);		\
+}
+
+
+
+
+
+
 
 
 //As explained above, these defines do nothing; C++ QtouchApp looks for these tags
@@ -776,8 +847,8 @@ const int VARSUPDATAIDX_VARNAME_FIN(0) = 0;
 			
 
 #define SUP_INITIALIZE_VARLIST 														\
-			uniform vec4 sup_data[SUP_VARLIST_SIZE];								\
-			FOR_EACH_SUPPORTED_NATIVE_TYPE(MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE)	\
+			uniform float sup_data[SUP_VARLIST_SIZE];								\
+			MAKE_GETVARATINDEX_FUNS_FOR_ALL_NATIVE_TYPES							\
 			FOR_EACH_CUSTOMTYPE(MAKE_GETVARATINDEX_FUNC_FOR_CUSTOM_TYPE)			\
 			FOR_EACH_VARLIST_ENTRY(INIT_VARLIST_ENTRY)
 
