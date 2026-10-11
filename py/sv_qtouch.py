@@ -29,7 +29,7 @@ class TreeDataWithVarNamesPacketContent:
 	total_entries: int
 	first_index: int
 	last_index: int
-	vec4_values: list[Vec4]
+	float_values: list[float]
 
 class UsedOpNames:
 	DatWithVarNames = "varnames"
@@ -93,7 +93,7 @@ class QTouchTcpConnection:
 		glsl_filepaths = []
 		for row in glsl_files_op.rows():
 			glsl_op = sv.proj_op(row[0])
-			assert glsl_op
+			assert glsl_op, f"glsl_op [{row[0]}] doesnt exist, cant send glsl"
 			
 			glsl_filepath = glsl_op.par.file.eval()
 			assert glsl_filepath, "glsl node mentioned must have file linked !"
@@ -199,6 +199,14 @@ class QTouchTcpConnection:
 			raise ValueError("unexpected end of packet while reading uint32")
 		return struct.unpack_from(U32_FMT, buf, offset)[0], offset + U32_SIZE
 
+	def read_f32(self, buf: bytes, offset: ByteOffset) -> tuple[float, ByteOffset]:
+		F32_FMT = "<f"
+		F32_SIZE = 4
+		if offset + F32_SIZE > len(buf):
+			raise ValueError("unexpected end of packet while reading float32")
+		return struct.unpack_from(F32_FMT, buf, offset)[0], offset + F32_SIZE
+
+
 	def read_vec4(self, buf: bytes, offset: ByteOffset) -> tuple[Vec4, ByteOffset]:
 		VEC4_FMT = "<4f"
 		VEC4_SIZE = 16
@@ -208,7 +216,7 @@ class QTouchTcpConnection:
 
 	def read_bytes(self, buf: bytes, offset: ByteOffset, size: int) -> tuple[bytes, ByteOffset]:
 		if size < 0 or offset + size > len(buf):
-			raise ValueError("unexpected end of packet while reading bytes")
+			raise ValueError(f"unexpected end of packet while reading bytes; buf[{len(buf)}], accessed range [{offset} {offset + size}]")
 		return buf[offset:offset + size], offset + size
 
 
@@ -248,14 +256,13 @@ class QTouchTcpConnection:
 		first_index, offset = self.read_u32(contentBlock, offset)
 		last_index, offset = self.read_u32(contentBlock, offset)
 
-		#Next piece of data: N x vec4 vars
+		#Next piece of data: N x float vars
 		values_count = last_index - first_index + 1
 		assert values_count >= 0
-		vec4_values = []
+		float_values = []
 		for i in range(values_count):
-			vec4_value, offset = self.read_vec4(contentBlock, offset)
-			#print(f"Individual vec4 value: {vec4_value}");
-			vec4_values.append(vec4_value)
+			float_value, offset = self.read_f32(contentBlock, offset)
+			float_values.append(float_value)
 			
 		
 		#Next piece of data: optional M x var names 
@@ -272,7 +279,7 @@ class QTouchTcpConnection:
 			total_entries=total_entries,
 			first_index=first_index,
 			last_index=last_index,
-			vec4_values=vec4_values
+			float_values=float_values
 		)
 		
 		return result
@@ -319,11 +326,11 @@ class QTouchTcpConnection:
 		assert op_varnames.numRows == packet.total_entries, f" existing varnames [{op_varnames.numRows}] != packet entries count [{packet.total_entries}] ! packet varnames count [{len(packet.var_names)}]"
 		
 		new_vardata_rows = []
-		for i in range(len(packet.vec4_values)):
+		for i in range(len(packet.float_values)):
 			var_index = packet.first_index + i
 			var_name = op_varnames[var_index, 0].val
-			x,y,z,w = packet.vec4_values[i]
-			new_vardata_rows.append([var_name,x,y,z,w])
+			float_value = packet.float_values[i]
+			new_vardata_rows.append([var_name, float_value])
 		
 		# this whole thing is supposed to be efficient, cause its one copy operation on final node.
 		# we dont want to jerk final node more than once
