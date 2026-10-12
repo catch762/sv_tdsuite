@@ -25,30 +25,35 @@ struct Outer
 uniform Outer myStruct;
 uniform vec4 nativeVec;
 
-// What if you wanted to set this uniform data externally?
-// Well, its easy to do it in any language via uniform locations / uniform buffer objects / whatever.
-//
-// However, in Touchdesigner shader host, the options are:
-//	- Setup every single field by hand via UI (im not doing this)
-//	- Declare a single uniform array of floats and map your structs to using
-//	  absolutely nightmarish set of preprocessor macros.
-//
-// So thats what we are gonna do in this module.
-//
-// We are gonna declare a single uniform array of floats and map our structs to it using 
-// absolutely nightmarish set of preprocessor macros.
-//
-// (And ofcourse, this means that you need to make a tool which actually fills in this array data. My tool for this
-// is a C++ Qt app sv_qtouch; but talking about it is mostly irrelevant. All the shader cares about is that
-// there is a float array, and that structs are correctly mapped to it.)
-//
-// That said, i also have to mention: my QTouch app, mentioned above, parses the glsl code which uses this module,
-// in order to recreate this data in C++ in order to create UI for this data and fill that array of floats.
-// Therefore, a secondary, very minor objective of this sv_sup module, is to make sure our data is declared in a way,
-// that when we parse this shader code in our C++ app, we can obtain all the information that interests us.
-// This aspect is not really present in how preprocessor logic itself works, it is defined by certain code style/formatting rules.
-//
-// So, head over to the next section and see how it all works.
+/*
+What if you wanted to set this uniform data externally?
+Well, its easy to do it in any language via uniform locations / uniform buffer objects / whatever.
+
+However, in Touchdesigner shader host, the options are:
+	- Setup every single field by hand via UI (im not doing this)
+	- Declare a single uniform array of floats and map your structs to it
+	  using absolutely nightmarish set of preprocessor macros.
+
+So thats what we are gonna do in this module.
+
+We are gonna declare a single uniform array of floats and map our structs to it
+using absolutely nightmarish set of preprocessor macros.
+
+(And ofcourse, this means that you need to make a tool which actually fills in
+this array data. My tool for this is a C++ Qt app sv_qtouch; but talking about it
+is mostly irrelevant. All the shader cares about is that there is a float array, 
+and that structs are correctly mapped to it.)
+
+That said, i also have to mention: my QTouch app, mentioned above, parses the glsl 
+code which uses this module, in order to recreate this data in C++ in order to create
+UI for this data and fill that array of floats.
+Therefore, a secondary, very minor objective of this sv_sup module, is to make sure our
+data is declared in a way, that when we parse this shader code in our C++ app, we can 
+obtain all the information that interests us. This aspect is not really present in how 
+preprocessor logic itself works, it is defined by certain code style/formatting rules.
+
+So, head over to the next section and see how it all works.
+*/
 #endif
 
 //Im putting this example here, because this reading order makes sense, but obviously, 
@@ -114,7 +119,7 @@ SUP_STRDECL(Outer)
 
 //What this macro does is:
 //	- calculates total size of data in SUP_VARLIST
-//	- creates the array: uniform vec4 sup_data[SUP_VARLIST_SIZE];
+//	- creates the array: uniform float sup_data[SUP_VARLIST_SIZE];
 //	- creates function which take offset in that array and return variable
 //	  of each type, reading them from that offset. Its called internally, but FYI.
 //	- creates functions to access every variable in SUP_VARLIST; see just below
@@ -132,18 +137,9 @@ vec4  copyOf_nativeVec 	= nativeVec();
 
 #ifdef SOME_NOTES_ON_IMPLEMENTATION_DETAILS_AND_TROUBLESHOOTING_AND_TODO
 /*
-	0. Implementation is based on assumption that aggressive inlining will optimize
-	away all the functions for accessing struct instances; otherwise im fucked.
-	The more specific your access function calls are, the better, anyway. Probably.
-	(i mean, dont request large struct to copy one field, just call that field accessor)
-
-	1. Array type
-	
-	You may have noticed: wait, the array is vec4 sup_data[].
-	Why vec4 and not float?
-	Well, for simplicity, so every variable fits in vec4.
-	Yes, it means if im storing single float, it takes space of four.
-	I had enough on my plate at the moment; that is the first thing to improve on TODO list.
+	1. Implementation is based on assumption that aggressive inlining will
+	optimize away all the functions for accessing struct instances. I think 
+	i was right about that.
 	
 	2. The need for index
 	
@@ -302,10 +298,9 @@ vec4  copyOf_nativeVec 	= nativeVec();
 //*********************************************************************************
 
 //evaluates to variable name containing:
-//	size which is number of vec4 entries in that 'uniform vec4 sup_data[];' above
+//	size which is number of float entries in that 'uniform float sup_data[];'
 #define TYPESIZE_VARNAME(STRTYPE) STRTYPE ## _structsize
 
-//all native types fit in single vec4 entry
 #define SAVE_NATIVE_TYPE_SIZE(NATIVETYPE, SIZE) const int TYPESIZE_VARNAME(NATIVETYPE) = SIZE;
 
 SAVE_NATIVE_TYPE_SIZE(float, 1)
@@ -327,7 +322,7 @@ SAVE_NATIVE_TYPE_SIZE(ivec4, 4)
 
 
 //evaluates to variable name containing:
-//	offset (in number of vec4 entries) from start of the struct for this member 
+//	offset (in number of float entries) from start of the struct for this member 
 #define MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX) STRTYPE ## _offset_for_memberidx_ ## MEMBERIDX
 #define MEMBEROFFSET_VARNAME_INT(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_IMP(STRTYPE, MEMBERIDX)
 #define MEMBEROFFSET_VARNAME_FIN(STRTYPE, MEMBERIDX) MEMBEROFFSET_VARNAME_INT(STRTYPE, SUP_EVAL(MEMBERIDX))
@@ -687,27 +682,6 @@ for level in range(levelfrom, levelto+1):
 #endif
 
 #ifndef SUP_CORE_LOGIC_PUTTING_IT_ALL_TOGETHER
-
-
-/*
-//Since every native variable is stored in vec4 in sup_data array, heres how we restore:
-float 	sup_as_float	(vec4 v) {return v.x;	}
-vec2 	sup_as_vec2		(vec4 v) {return v.xy;	}
-vec3 	sup_as_vec3		(vec4 v) {return v.xyz;	}
-vec4 	sup_as_vec4		(vec4 v) {return v;		}
-int 	sup_as_int		(vec4 v) {return int(v.x + 0.5);			}
-ivec2 	sup_as_ivec2	(vec4 v) {return ivec2(v.xy + vec2(0.5));	}
-ivec3 	sup_as_ivec3	(vec4 v) {return ivec3(v.xyz + vec3(0.5));	}
-ivec4 	sup_as_ivec4	(vec4 v) {return ivec4(v + vec4(0.5));		}
-
-
-
-#define MAKE_GETVARATINDEX_FUNC_FOR_NATIVE_TYPE(TYPE) 	\
-	TYPE GETVARATINDEX_FUNCNAME(TYPE) (int supDataIndex)\
-	{													\
-		return sup_as_ ## TYPE (sup_data[supDataIndex]);\
-	}
-*/
 
 //this has to be done after sup_data is declared 
 #define MAKE_GETVARATINDEX_FUNS_FOR_ALL_NATIVE_TYPES  	\
