@@ -175,7 +175,7 @@ IQNEL_REGISTER(iqnel_wirebox, 1)
 //wirebox with caleidoscope and onion
 float iqnel_wbco(vec3 p_orig, vec4 idx, ElemParams EP)
 {
-	float 	RES 		= SDF_SURELY_OUTSIDE;
+	float 	RES 		= SDF_OUTSIDE;
 	vec3 	p 			= p_orig;	
 	
 	vec4 Pads = iqn_getPadsWithDelta(EP.Pads, EP.PadsDelta, idx, EP.RoundClipformClipsizeNoisetodepth.w);
@@ -224,7 +224,7 @@ float iqn_sdf(vec3 p, int sdf_id, ElemParams prm_elem, float depth01)
 							
 	if(false){}
 	IQN_ELEM_LIST(IQN_SDF_ENTRY)
-	else return SDF_SURELY_OUTSIDE;
+	else return SDF_OUTSIDE;
 }
 
 float iqn_sdf_single(vec3 p, int sdf_id, vec3 idx, ElemParams prm_elem, float depth01)
@@ -234,7 +234,7 @@ float iqn_sdf_single(vec3 p, int sdf_id, vec3 idx, ElemParams prm_elem, float de
 							
 	if(false){}
 	IQN_ELEM_LIST(IQN_SDF_SINGLE_ENTRY)
-	else return SDF_SURELY_OUTSIDE;
+	else return SDF_OUTSIDE;
 }
 
 
