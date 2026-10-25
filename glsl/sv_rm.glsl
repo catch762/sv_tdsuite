@@ -7,7 +7,7 @@
 //**********************
 //	EXAMPLE SECTION
 //**********************
-#ifndef SDFINTERM_EXAMPLE_SECTION
+#ifdef SDFINTERM_EXAMPLE_SECTION
 struct M1
 {
 	float dist;

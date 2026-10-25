@@ -730,15 +730,25 @@ int f2i(float f)
 }
 
 //returns id of cell, assuming center of cell with idx 0 is at origin
+int to_cellspace(float p, float cellsize)
+{
+	p += cellsize * 0.5;
+	
+	float cellspace = p / cellsize;
+	float index = floor(cellspace);
+	
+	return int(index);
+}
 //cellcoord01: 0 at left border, 1 at right, for all indexes
 int to_cellspace(float p, float cellsize, out float cellcoord01)
 {
 	p += cellsize * 0.5;
-	float cs = p / cellsize;
 	
-	int index = cs > 0 ? int(cs) : int(cs-1);
-	cellcoord01 = cs - float(index);
-	return index;
+	float cellspace = p / cellsize;
+	float index = floor(cellspace);
+	
+	cellcoord01 = cellspace - index;
+	return int(index);
 }
 ivec2 to_cellspace(vec2 p, vec2 cellsize, out vec2 cellcoord01)
 {
