@@ -30,7 +30,7 @@ vec3 	sop_repl	(vec3 p, vec3 size, ivec3 idxfrom, ivec3 idxto){ivec3 idx = ivec3
 
 
 //This shit doesnt really work or maybe it does but im keeping it for legacy
-
+/*
 float IQ_rep_kaleid_unl_getIdx(vec2 p_xz, int Subdivs)
 {
     const float b = 6.283185/float(Subdivs);
@@ -60,6 +60,7 @@ float IQ_rep_kaleid_unl_fixIdx(float idx, int subdivs)
 	wrappedidx 		= wrappedidx % subdivs;
 	return float(wrappedidx);
 }
+*/
 
 //one sdf call works. bilateral means every copy left/right mirrored
 vec3 sop_repl_radial_bilateral(vec3 point, int subdivisions)
