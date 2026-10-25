@@ -74,7 +74,7 @@ def add_python_dat_nodes():
 
 def add_glsl_dat_nodes():
 	glsl_module_names = [
-		"sv_common", "sv_sup", "sv_rm_core", "sv_rm_primitives", "sv_rm_iqn", "sv_rm", "sv_lighting"
+		"sv_common", "sv_sup", "sv_rm_core", "sv_rm_primitives", "sv_rm_repl", "sv_rm_iqn", "sv_rm", "sv_lighting"
 	]
 	
 	for index, name in enumerate(glsl_module_names):
