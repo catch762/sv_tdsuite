@@ -2,6 +2,7 @@
 #include "sv_rm_repl_glsl"
 #include "sv_rm_primitives_glsl"
 #include "sv_rm_iqn_glsl"
+#include "sv_rm_water_glsl"
 
 
 //**********************
