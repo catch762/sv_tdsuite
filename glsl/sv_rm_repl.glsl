@@ -1,81 +1,60 @@
-//these two are taken from Inigo, should work but retarded code
-//vec3 	sop_repl	(vec3 p, vec3 c )			{return mod(p + 0.5 * c,c) - 0.5 * c;}
-//vec3 	sop_repl	(vec3 p, float c, vec3 l)	{vec3 q = p-c*clamp(round(p/c),-l,l);return q;}
-
-vec3 	sop_repl	(vec3 p, vec3 size )
+//repl endlessly in all directions, quickest simplest version
+vec3 	sop_repl	(vec3 p, vec3 size)
 {
 	return mod(p + 0.5 * size,size) - 0.5 * size;
 }
 
-vec3 	sop_repl	(vec3 p, float spacing, vec3 indexLim)
+//replicate endlessly along one axis
+float 	sop_repl	(float p, float size)
 {
-	vec3 q = p - spacing * clamp(round(p/spacing), -indexLim, indexLim);
-	return q;
-}
-
-//these are mine and they do work but need optimize and final round of rework. and version with mirror
-float 	sop_replold	(float p, float size, int idxmin, int idxmax, out int idx)
-{
-    int     thesign = p > 0 ? 1 : -1;
-    int     halfidx = int(p / (size * 0.5));
-    int     theidx  = (halfidx + thesign) / 2;
-    
-    theidx = clamp(theidx, min(idxmin, idxmax), max(idxmin, idxmax));
-    
-    float   inner   = p - theidx * size;
-    
-    idx = theidx;
-    return  inner;
-}
-
-//returns 1 if even, -1 if odd
-int even11(int n)
-{
-	return 1 - 2 * (n & 1);
-}
-
-float 	sop_repl	(float p, float size, int idxmin, int idxmax, out int idx)
-{
-    int actual_index = to_cellspace(p, size);
-	
-	idx = clamp(actual_index, min(idxmin, idxmax), max(idxmin, idxmax));
+    float idx = floor(to_cellspace(p, size));
 	
 	return p - idx * size;
 }
+
+//replicate in finite index range
+float 	sop_repl	(float p, float size, int idxmin, int idxmax, out int idx)
+{
+    idx = int(floor(to_cellspace(p, size)));
+	idx = clamp(idx, min(idxmin, idxmax), max(idxmin, idxmax));
+	
+	return p - idx * size;
+}
+
+//If objects in neighbor cells are not mirroring each other, we need multiple
+//render calls to avoid artifacts; this function applies mirroring, so one call
+//will be enough
 float 	sop_repl_mir(float p, float size, int idxmin, int idxmax, out int idx)
 {
     float repeated_p = sop_repl(p,size,idxmin,idxmax,idx);
 	return repeated_p * even11(idx); //inverted for odd indexes
 }
-float 	sop_repl	(float p, float size, int idxmin, int idxmax){int idx = 0; return sop_repl(p, size, idxmin, idxmax, idx);}
-
 
 vec3 	sop_repl	(vec3 p, vec3 size, ivec3 idxfrom, ivec3 idxto, out ivec3 idx)
 {
-    int     x_idx   = 0;
+    int     x_idx;
     float   x_inner = sop_repl(p.x, size.x, idxfrom.x, idxto.x, x_idx);
-    int     y_idx   = 0;
+    int     y_idx;
     float   y_inner = sop_repl(p.y, size.y, idxfrom.y, idxto.y, y_idx);
-    int     z_idx   = 0;
+    int     z_idx;
     float   z_inner = sop_repl(p.z, size.z, idxfrom.z, idxto.z, z_idx);
 
     idx             = ivec3(x_idx, y_idx, z_idx);
     return vec3(x_inner,y_inner,z_inner);
 }
+
 vec3 	sop_repl_mir(vec3 p, vec3 size, ivec3 idxfrom, ivec3 idxto, out ivec3 idx)
 {
-    int     x_idx   = 0;
+    int     x_idx;
     float   x_inner = sop_repl_mir(p.x, size.x, idxfrom.x, idxto.x, x_idx);
-    int     y_idx   = 0;
+    int     y_idx;
     float   y_inner = sop_repl_mir(p.y, size.y, idxfrom.y, idxto.y, y_idx);
-    int     z_idx   = 0;
+    int     z_idx;
     float   z_inner = sop_repl_mir(p.z, size.z, idxfrom.z, idxto.z, z_idx);
 
     idx             = ivec3(x_idx, y_idx, z_idx);
     return vec3(x_inner,y_inner,z_inner);
 }
-vec3 	sop_repl	(vec3 p, vec3 size, ivec3 idxfrom, ivec3 idxto){ivec3 idx = ivec3(0); return sop_repl(p, size, idxfrom, idxto, idx);}
-
 
 //This shit doesnt really work or maybe it does but im keeping it for legacy
 /*
@@ -122,6 +101,8 @@ vec3 sop_repl_radial_bilateral(vec3 point, int subdivisions)
     // Fold angle into the range [-halfSector, halfSector]
     angle = mod(angle + halfSector, sectorAngle) - halfSector;
     
+	//thats the bilateral symmetry part; if u dont do this,
+	//u might need to also calculate adjacent indexes objects
     angle = abs(angle);
     
     float radius = length(vec2(point.x, point.z));

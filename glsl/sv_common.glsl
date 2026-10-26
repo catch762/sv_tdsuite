@@ -729,50 +729,24 @@ int f2i(float f)
 	return int(f + 0.5*sign(f));
 }
 
-//returns id of cell, assuming center of cell with idx 0 is at origin
-int to_cellspace(float p, float cellsize)
+//This assumes center of cell with index 0 is at origin.
+//To get cell index:  take floor() of result
+//To get cellcoord01: take fract() of result
+float to_cellspace(float p, float cellsize)
 {
-	p += cellsize * 0.5;
-	
-	float cellspace = p / cellsize;
-	float index = floor(cellspace);
-	
-	return int(index);
+	return (p + cellsize * 0.5) / cellsize;
 }
-//cellcoord01: 0 at left border, 1 at right, for all indexes
-int to_cellspace(float p, float cellsize, out float cellcoord01)
+vec2 to_cellspace(vec2 p, vec2 cellsize)
 {
-	p += cellsize * 0.5;
-	
-	float cellspace = p / cellsize;
-	float index = floor(cellspace);
-	
-	cellcoord01 = cellspace - index;
-	return int(index);
+	return vec2(to_cellspace(p.x, cellsize.x),
+				to_cellspace(p.y, cellsize.y));
 }
-ivec2 to_cellspace(vec2 p, vec2 cellsize, out vec2 cellcoord01)
+vec3 to_cellspace(vec3 p, vec3 cellsize)
 {
-	float 	x_coord01 	= 0;
-	int 	x_idx 		= to_cellspace(p.x, cellsize.x, x_coord01);
-	float 	y_coord01 	= 0;
-	int 	y_idx 		= to_cellspace(p.y, cellsize.y, y_coord01);
-	
-	cellcoord01 = vec2(x_coord01, y_coord01);
-	return ivec2(x_idx, y_idx);
+	return vec3(to_cellspace(p.x, cellsize.x),
+				to_cellspace(p.y, cellsize.y),
+				to_cellspace(p.z, cellsize.z));
 }
-ivec3 to_cellspace(vec3 p, vec3 cellsize, out vec3 cellcoord01)
-{
-    float   x_coord01   = 0;
-    int     x_idx       = to_cellspace(p.x, cellsize.x, x_coord01);
-    float   y_coord01   = 0;
-    int     y_idx       = to_cellspace(p.y, cellsize.y, y_coord01);
-    float   z_coord01   = 0;
-    int     z_idx       = to_cellspace(p.z, cellsize.z, z_coord01);
-    
-    cellcoord01 = vec3(x_coord01, y_coord01, z_coord01);
-    return ivec3(x_idx, y_idx, z_idx);
-}
-
 
 vec3 Tonemap_ACES(vec3 x)
 {
@@ -795,4 +769,10 @@ float sum(vec3 v)
 float sum(vec4 v)
 {
 	return v.x + v.y + v.z + v.w;
+}
+
+//returns 1 if even, -1 if odd
+int even11(int n)
+{
+	return 1 - 2 * (n & 1);
 }

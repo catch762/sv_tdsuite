@@ -151,9 +151,8 @@ SUP_STRDECL(Lightgrid)
 			F(Light)\
 			F(Lightgrid)
 
-vec3 lightcell_seed11(ivec3 idx)
+vec3 lightcell_seed11(vec3 f /* its index */)
 {
-    vec3 f = idx;
     float a = nsin01(f.x * 0.68672 + f.y * 3.3234 - sin(f.z*4.1)*4.123,
 					 (lim_fold01(sin(f.x*9.1)+4.343243) + 1));
 	float b = nsin01(cos(f.y+2.5) - a + a*(f.z * 9.4211 + sin(a*0.43534 + f.x * 1.2323))); 
@@ -167,8 +166,9 @@ vec3 get_light_pos_from_grid(vec3 p, Lightgrid lightgrid, ivec3 idx4seed_offset,
 	vec3 	cellsize 		= mulw(lightgrid.cellsize); 
 	vec3 	wiggleroom01 	= mulw(lightgrid.wiggleroom01);
 	
-    vec3    query_coord01   = vec3(0);
-    ivec3   query_idx       = to_cellspace(p, cellsize, query_coord01);
+	vec3 	query_cellspace = to_cellspace(p, cellsize);
+    vec3    query_coord01   = fract(query_cellspace);
+    vec3   	query_idx       = floor(query_cellspace);
     
 	vec3 	cell_seed11 	= lightcell_seed11(query_idx + idx4seed_offset);
 	
@@ -178,7 +178,7 @@ vec3 get_light_pos_from_grid(vec3 p, Lightgrid lightgrid, ivec3 idx4seed_offset,
 	vec3 	wiggledPos 		= wiggleRoom * cell_seed11 * 0.5;
 	
 	//Absolute positions:
-	vec3 	cellCenter 		= cellsize * vec3(query_idx);	
+	vec3 	cellCenter 		= cellsize * query_idx;	
 	vec3 	lightPos 		= cellCenter + wiggledPos;
 	
 	vec3 	corner 						= cellsize * 0.5;
