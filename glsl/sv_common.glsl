@@ -771,8 +771,20 @@ float sum(vec4 v)
 	return v.x + v.y + v.z + v.w;
 }
 
-//returns 1 if even, -1 if odd
-int even11(int n)
+//returns 1.0 if even, -1.0 if odd
+float even11(int n)
 {
-	return 1 - 2 * (n & 1);
+	return float(1 - 2 * (n & 1));
+}
+
+//returns 1.0 if x >= edge, else -1.0
+float step11(float edge, float x)
+{
+	return n01_to_11(step(edge, x));
+}
+
+//returns 1.0 if true, -1.0 if false
+float boolean11(bool b)
+{
+	return n01_to_11(int(b));
 }

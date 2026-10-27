@@ -13,10 +13,9 @@
 #define DRAG_MULT (0.38 * WSCALE)  // changes how much waves pull on the water
 #define WATER_DEPTH (2.0 * WSCALE) // how deep is the water
 
-#define ITERATIONS_RAYMARCH 44 // waves iterations of raymarching
+#define ITERATIONS_RAYMARCH 12 // waves iterations of raymarching
 #define ITERATIONS_NORMAL 36 // waves iterations when calculating normals
 
-#define NormalizedMouse (iMouse.xy / iResolution.xy) // normalize mouse coords
 
 // Calculates wave value and its derivative, 
 // for the wave direction, position in space, wave frequency and time
@@ -74,13 +73,77 @@ float getwaves01(vec2 position, int iterations)
 }
 
 //Water will be in height range [waterSurfaceY - waterDepth, waterSurfaceY]
-float sdf_water(vec3 p, int iterations, float waterSurfaceY, float waterDepth)
+float waterHeightAt(vec2 xz, float waterSurfaceY, float waterDepth)
+{
+	return waterSurfaceY + (getwaves01(xz, iterations) - 1.0) * waterDepth;
+}
+
+
+float sdf_water(vec3 p, int iterations, float waterSurfaceY, float waterDepth, bool cameraIsUnderwater)
 {
 	//height goes from -WATER_DEPTH to 0.0
 	
-	float waterHeightHere = waterSurfaceY + (getwaves01(p.xz, iterations) - 1.0) * waterDepth;
+	float waterHeightHere = waterHeightAt(p.xz, waterSurfaceY, waterDepth);
 	
-	float dist = p.y - waterHeightHere;
+	bool underwaterSign = boolean11(cameraIsUnderwater);
+	
+	float dist = p.y * underwaterSign - waterHeightHere * underwaterSign;
 	
 	return dist * 0.97;
+}
+
+float sdf_water(vec3 p, int iterations, bool cameraIsUnderwater)
+{
+	return sdf_water(p, iterations, 0.0, WATER_DEPTH, cameraIsUnderwater);
+}
+
+//orig had 0.01
+#define SV_RM_WATER_EPSILON (0.01 * WSCALE)
+//maybe experiment later
+#define SV_RM_WATER_NORMAL_EPSILON_MOD 1.0
+
+float water_march(Ray ray, float start, float end, bool cameraIsUnderwater)
+{	
+	float depth_reached = start;								
+	for (int i = 0; i < 64; i++) 
+	{		
+		float dist_to_water = sdf_water(walkray(ray, depth_reached), ITERATIONS_RAYMARCH, cameraIsUnderwater);		
+		if (dist_to_water < SV_RM_WATER_EPSILON) 					
+		{
+			return depth_reached;
+		}					
+		depth_reached += dist_to_water;								
+		if (depth_reached >= end) break;						
+	}				
+
+	//ORIG HAD THIS:
+	// if hit was not registered, just assume hit the top layer, 
+	// this makes the raymarching faster and looks better at higher distances
+	//return distance(start, camera);
+	
+	return SDF_OUTSIDE;								
+}
+
+
+vec3 water_normal(vec3 p, bool cameraIsUnderwater)
+{
+    vec2 	e = vec2(1.0,-1.0) * SV_RM_WATER_EPSILON * SV_RM_WATER_NORMAL_EPSILON_MOD;						
+	float 	a = sdf_water(p + e.xyy, ITERATIONS_NORMAL, cameraIsUnderwater);					
+	float 	b = sdf_water(p + e.yyx, ITERATIONS_NORMAL, cameraIsUnderwater);					
+	float 	c = sdf_water(p + e.yxy, ITERATIONS_NORMAL, cameraIsUnderwater);					
+	float 	d = sdf_water(p + e.xxx, ITERATIONS_NORMAL, cameraIsUnderwater);					
+	return 	normalize(a*e.xyy + b*e.yyx + c*e.yxy + d*e.xxx);	
+}
+
+// Calculate normal at point by calculating the height at the pos and 2 additional points very close to pos
+vec3 normal(vec2 pos, float e, float depth) {
+  vec2 ex = vec2(e, 0);
+  float H = getwaves(pos.xy, ITERATIONS_NORMAL) * depth;
+  vec3 a = vec3(pos.x, H, pos.y);
+  return normalize(
+    cross(
+      a - vec3(pos.x - e, getwaves(pos.xy - ex.xy, ITERATIONS_NORMAL) * depth, pos.y), 
+      a - vec3(pos.x, getwaves(pos.xy + ex.yx, ITERATIONS_NORMAL) * depth, pos.y + e)
+    )
+  );
 }
