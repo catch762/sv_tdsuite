@@ -11,9 +11,9 @@
 #define WSCALE (0.25 * 1.0)
 
 #define DRAG_MULT (0.38 * WSCALE)  // changes how much waves pull on the water
-#define WATER_DEPTH (2.0 * WSCALE) // how deep is the water
+#define WATER_DEPTH (1.0 * WSCALE) // how deep is the water
 
-#define ITERATIONS_RAYMARCH 12 // waves iterations of raymarching
+#define ITERATIONS_RAYMARCH 12  // waves iterations of raymarching
 #define ITERATIONS_NORMAL 36 // waves iterations when calculating normals
 
 
@@ -38,7 +38,7 @@ vec2 wave01_dx(vec2 position, vec2 direction, float frequency, float timeshift)
 // Calculates waves by summing octaves of various waves with various parameters
 float getwaves01(vec2 position, int iterations)
 {
-  float wavePhaseShift = length(position) * 0.1; // this is to avoid every octave having exactly the same phase everywhere
+  float wavePhaseShift = length(position) * 0.1 * WSCALE; // this is to avoid every octave having exactly the same phase everywhere
   float rotationSeed = 0.0;
   float frequency = 0.5 / WSCALE;
   float timeMultiplier = 0.5;
@@ -48,13 +48,16 @@ float getwaves01(vec2 position, int iterations)
   for(int i=0; i < iterations; i++)
   {
     // generate some wave direction that looks kind of random
-    vec2 p = vec2(sin(rotationSeed), cos(rotationSeed));
+    vec2 wavedir = vec2(sin(rotationSeed), cos(rotationSeed));
     
-    // calculate wave data
-    vec2 res = wave01_dx(position, p, frequency, (time) * timeMultiplier + wavePhaseShift);
+    //Very important line. If we dont constrain, large values will fuck up the sin() call. Conterintuitive, yes.
+	float timeUsed = mod(time * timeMultiplier, 2.0 * PI);
+	
+	// calculate wave data
+    vec2 res = wave01_dx(position, wavedir, frequency, timeUsed + wavePhaseShift);
 
     // shift position around according to wave drag and derivative of the wave
-    position += p * res.y * weight * DRAG_MULT;
+    position += wavedir * res.y * weight * DRAG_MULT;
 
     // add the results to sums
     sumOfValues += res.x * weight;
@@ -66,14 +69,14 @@ float getwaves01(vec2 position, int iterations)
     timeMultiplier *= 1.07;
 
     // add some kind of random value to make next wave look random too
-    rotationSeed += 17.397963;
+    rotationSeed += 17.387963;
   }
   // calculate and return
   return sumOfValues / sumOfWeights;
 }
 
 //Water will be in height range [waterSurfaceY - waterDepth, waterSurfaceY]
-float waterHeightAt(vec2 xz, float waterSurfaceY, float waterDepth)
+float waterHeightAt(vec2 xz, int iterations, float waterSurfaceY, float waterDepth)
 {
 	return waterSurfaceY + (getwaves01(xz, iterations) - 1.0) * waterDepth;
 }
@@ -83,19 +86,23 @@ float sdf_water(vec3 p, int iterations, float waterSurfaceY, float waterDepth, b
 {
 	//height goes from -WATER_DEPTH to 0.0
 	
-	float waterHeightHere = waterHeightAt(p.xz, waterSurfaceY, waterDepth);
+	float waterHeightHere = waterHeightAt(p.xz, iterations, waterSurfaceY, waterDepth);
 	
-	bool underwaterSign = boolean11(cameraIsUnderwater);
+	float underwaterSign = -boolean11(cameraIsUnderwater);
 	
 	float dist = p.y * underwaterSign - waterHeightHere * underwaterSign;
 	
-	return dist * 0.97;
+	return dist * 0.7;
 }
 
 float sdf_water(vec3 p, int iterations, bool cameraIsUnderwater)
 {
 	return sdf_water(p, iterations, 0.0, WATER_DEPTH, cameraIsUnderwater);
 }
+
+
+//Should work but i didnt test:
+
 
 //orig had 0.01
 #define SV_RM_WATER_EPSILON (0.01 * WSCALE)
@@ -133,17 +140,4 @@ vec3 water_normal(vec3 p, bool cameraIsUnderwater)
 	float 	c = sdf_water(p + e.yxy, ITERATIONS_NORMAL, cameraIsUnderwater);					
 	float 	d = sdf_water(p + e.xxx, ITERATIONS_NORMAL, cameraIsUnderwater);					
 	return 	normalize(a*e.xyy + b*e.yyx + c*e.yxy + d*e.xxx);	
-}
-
-// Calculate normal at point by calculating the height at the pos and 2 additional points very close to pos
-vec3 normal(vec2 pos, float e, float depth) {
-  vec2 ex = vec2(e, 0);
-  float H = getwaves(pos.xy, ITERATIONS_NORMAL) * depth;
-  vec3 a = vec3(pos.x, H, pos.y);
-  return normalize(
-    cross(
-      a - vec3(pos.x - e, getwaves(pos.xy - ex.xy, ITERATIONS_NORMAL) * depth, pos.y), 
-      a - vec3(pos.x, getwaves(pos.xy + ex.yx, ITERATIONS_NORMAL) * depth, pos.y + e)
-    )
-  );
 }
