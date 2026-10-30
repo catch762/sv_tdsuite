@@ -13,7 +13,7 @@
 #define DRAG_MULT (0.38 * WSCALE)  // changes how much waves pull on the water
 #define WATER_DEPTH (1.0 * WSCALE) // how deep is the water
 
-#define ITERATIONS_RAYMARCH 12  // waves iterations of raymarching
+#define ITERATIONS_RAYMARCH 36  // waves iterations of raymarching
 #define ITERATIONS_NORMAL 36 // waves iterations when calculating normals
 
 
@@ -41,7 +41,7 @@ float getwaves01(vec2 position, int iterations)
   float wavePhaseShift = length(position) * 0.1 * WSCALE; // this is to avoid every octave having exactly the same phase everywhere
   float rotationSeed = 0.0;
   float frequency = 0.5 / WSCALE;
-  float timeMultiplier = 0.5;
+  float timeMultiplier = 0.75;
   float weight = 1.0;
   float sumOfValues = 0.0;
   float sumOfWeights = 0.0;
@@ -81,6 +81,10 @@ float waterHeightAt(vec2 xz, int iterations, float waterSurfaceY, float waterDep
 	return waterSurfaceY + (getwaves01(xz, iterations) - 1.0) * waterDepth;
 }
 
+bool getCameraIsUnderwater(vec3 camera, float waterSurfaceY, float waterDepth)
+{
+	return camera.y < waterHeightAt(camera.xz, ITERATIONS_RAYMARCH, waterSurfaceY, waterDepth);
+}
 
 float sdf_water(vec3 p, int iterations, float waterSurfaceY, float waterDepth, bool cameraIsUnderwater)
 {
@@ -99,6 +103,7 @@ float sdf_water(vec3 p, int iterations, bool cameraIsUnderwater)
 {
 	return sdf_water(p, iterations, 0.0, WATER_DEPTH, cameraIsUnderwater);
 }
+
 
 
 //Should work but i didnt test:
