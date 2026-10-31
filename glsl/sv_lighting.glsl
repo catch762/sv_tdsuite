@@ -16,20 +16,6 @@ vec4, 	speccolor,				ui("color = []")	\
 vec2, 	RoughnessRefraction)	ui("lims=[0, 2, 1]")	
 SUP_STRDECL(BPM)
 
-float bpm_get_kr(vec3 n, vec3 rd, float km, float kn)
-{
-	// shlick approximation
-    float fre = 1.+dot(rd, n); // fresnel
-	
-	// fresnel amount
-    float f0 = (kn-1.)/(kn+1.);
-          f0 = f0*f0;
-		  
-	float kr = f0 + (1.-f0)*(1.-km)*(1.-km) * pow(fre, 5.); // reflectivity
-	
-	return kr;
-}
-
 vec3 bpm_lighting(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, float kn)
 {
 	// n -> normal
@@ -50,8 +36,14 @@ vec3 bpm_lighting(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, 
     float g = ndh*ndh * (km*km - 1.) + 1.;
     float ggx = km*km / (3.141592*g*g);
 
-    
-	float kr = bpm_get_kr(n, rd, km, kn);
+	// shlick approximation
+    float fre = 1.+dot(rd, n); // fresnel
+	
+	// fresnel amount
+    float f0 = (kn-1.)/(kn+1.);
+          f0 = f0*f0;
+		  
+	float kr = f0 + (1.-f0)*(1.-km)*(1.-km) * pow(fre, 5.); // reflectivity
     
     return kl*ndl*(kd + ks*kr*ggx); // diffuse + specular
 }
