@@ -22,7 +22,7 @@
 #define SDF_MAX_DIST 6.0
 #endif
 
-
+//0.000001
 #ifndef SDF_EPSILON
 #define SDF_EPSILON 0.000001
 #endif
