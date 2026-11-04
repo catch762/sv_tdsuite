@@ -16,7 +16,7 @@ vec4, 	speccolor,				ui("color = []")	\
 vec2, 	RoughnessRefraction)	ui("lims=[0, 2, 1]")	
 SUP_STRDECL(BPM)
 
-vec3 bpm_lighting(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, float kn)
+vec3 bpm_lighting_old(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, float kn)
 {
 	// n -> normal
 	// l -> light direction
@@ -48,6 +48,59 @@ vec3 bpm_lighting(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, 
     return kl*ndl*(kd + ks*kr*ggx); // diffuse + specular
 }
 
+// Schlick Fresnel. Returns RGB so ks can tint the reflection.
+//
+// For direct lighting, pass dot(V, H).
+// For the traced mirror ray, pass dot(N, V).
+vec3 bpm_fresnel(float cosTheta, vec3 F0)
+{
+    float x = 1.0 - clamp(cosTheta, 0.0, 1.0);
+    float x2 = x * x;
+    float x5 = x2 * x2 * x;
+
+    return F0 + (vec3(1.0) - F0) * x5;
+}
+
+// Your original lighting function, with only the necessary corrections.
+//
+// Changes from your original:
+//   * Fresnel now uses dot(V, H), not dot(rd, n).
+//   * Fresnel uses ks directly as F0.
+//   * Removed (1 - km)^2 from Fresnel; roughness should not disable
+//     grazing-angle reflection.
+//   * Kept your original GGX D term and omitted Smith G for speed.
+vec3 bpm_lighting(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km)
+{
+    // n  = surface normal
+    // rd = ray direction, pointing from camera toward surface
+    // l  = direction from surface toward light
+    // kl = light color/intensity
+    // kd = diffuse color
+    // ks = F0, specular reflection color at normal incidence
+    // km = roughness
+    // kn = refractive index; retained but not needed by this opaque model
+
+    float ndl = clamp(dot(n, l), 0.0, 1.0); // Lambert N dot L
+
+    vec3 v = -rd;                 // Surface -> viewer.
+    vec3 h = normalize(v + l);    // Microfacet half-vector.
+
+    float ndh = max(dot(n, h), 0.0);
+    float vdh = max(dot(v, h), 0.0);
+
+    // GGX / Trowbridge-Reitz normal-distribution term.
+    // This is only the D term of a full microfacet BRDF, as in your original.
+    float g = ndh * ndh * (km * km - 1.0) + 1.0;
+    float ggx = km * km / (PI * g * g);
+
+    // Fresnel reflectance for this view/light configuration.
+    vec3 fresnel = bpm_fresnel(vdh, ks);
+
+    // Your original diffuse + specular form.
+    // The diffuse term is unchanged; your existing kd values remain valid.
+    return kl * ndl * (kd + ks * fresnel * ggx);
+}
+
 vec3 bpm_lighting(vec3 normal, vec3 raydir, vec3 lightdir, vec3 lightcolor, BPM mat)
 {
 	vec3 	kd = mulw(mat.basecolor);
@@ -55,7 +108,7 @@ vec3 bpm_lighting(vec3 normal, vec3 raydir, vec3 lightdir, vec3 lightcolor, BPM 
 	float 	km = mat.RoughnessRefraction.x;
 	float 	kn = mat.RoughnessRefraction.y;
 	
-	return bpm_lighting(normal, raydir, lightdir, lightcolor, kd, ks, km, kn);
+	return bpm_lighting(normal, raydir, lightdir, lightcolor, kd, ks, km);
 }
 
 
