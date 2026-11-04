@@ -257,32 +257,51 @@ vec3 get_light_pos_from_grid(vec3 p, Lightgrid lightgrid, ivec3 idx4seed_offset,
 													}
 
 // Default materials collection
-BPM iron      = BPM(vec4(0.6, 0.6, 0.6, 1.0), vec4(0.1, 0.1, 0.1, 1.0), vec2(0.5, 1.5));      
-BPM dirt      = BPM(vec4(0.4, 0.3, 0.1, 1.0), vec4(0.02, 0.02, 0.02, 1.0), vec2(0.8, 1.3));   
-BPM mirror    = BPM(vec4(0.0, 0.0, 0.0, 1.0), vec4(1.0, 1.0, 1.0, 1.0), vec2(0.01, 1.0));     
-BPM glass     = BPM(vec4(0.01, 0.01, 0.01, 1.0), vec4(0.9, 0.9, 0.9, 1.0), vec2(0.05, 1.5));  
-BPM grass     = BPM(vec4(0.13, 0.3, 0.05, 1.0), vec4(0.03, 0.07, 0.03, 1.0), vec2(0.6, 1.33));
-BPM plastic   = BPM(vec4(0.5, 0.5, 0.5, 1.0), vec4(0.3, 0.3, 0.3, 1.0), vec2(0.25, 1.49));    
-BPM gold      = BPM(vec4(1.0, 0.8, 0.1, 1.0), vec4(1.0, 0.8, 0.1, 1.0), vec2(0.1, 0.47));     
-BPM silver    = BPM(vec4(0.7, 0.7, 0.7, 1.0), vec4(0.9, 0.9, 1.0, 1.0), vec2(0.18, 0.15));    
-BPM copper    = BPM(vec4(0.9, 0.4, 0.22, 1.0), vec4(0.9, 0.4, 0.22, 1.0), vec2(0.25, 0.26));  
-BPM wood      = BPM(vec4(0.5, 0.34, 0.13, 1.0), vec4(0.1, 0.1, 0.09, 1.0), vec2(0.6, 1.55));  
-BPM stone     = BPM(vec4(0.4, 0.4, 0.45, 1.0), vec4(0.1, 0.1, 0.1, 1.0), vec2(0.65, 1.55));   
-BPM marble    = BPM(vec4(0.8, 0.8, 0.8, 1.0), vec4(0.5, 0.5, 0.5, 1.0), vec2(0.18, 1.49));    
-BPM water     = BPM(vec4(vec3(0.04, 0.08, 0.13) * 0.5, 1.0), vec4(0.2, 0.2, 0.2, 1.0), vec2(0.05, 1.33)); 
-BPM skin      = BPM(vec4(1.0, 0.76, 0.65, 1.0), vec4(0.10, 0.06, 0.05, 1.0), vec2(0.8, 1.38));
-BPM asphalt   = BPM(vec4(0.07, 0.07, 0.07, 1.0), vec4(0.01, 0.01, 0.01, 1.0), vec2(0.6, 1.6));
-BPM chrome    = BPM(vec4(0.55, 0.57, 0.58, 1.0), vec4(0.99, 0.99, 0.99, 1.0), vec2(0.08, 1.0));
-BPM aluminum  = BPM(vec4(0.77, 0.77, 0.77, 1.0), vec4(0.9, 0.92, 0.98, 1.0), vec2(0.07, 1.45));
-BPM ceramic   = BPM(vec4(0.85, 0.78, 0.68, 1.0), vec4(0.3, 0.3, 0.3, 1.0), vec2(0.3, 1.54));   
-BPM paper     = BPM(vec4(0.9, 0.9, 0.8, 1.0), vec4(0.1, 0.1, 0.09, 1.0), vec2(0.45, 1.47));    
-BPM rubber    = BPM(vec4(0.02, 0.02, 0.02, 1.0), vec4(0.05, 0.05, 0.05, 1.0), vec2(0.9, 1.51));
+#define SV_DEFAULTMAT_IRON 0
+BPM iron      = BPM(vec4(0.6, 0.6, 0.6, 1.0), 		vec4(0.1, 0.1, 0.1, 1.0), 		vec2(0.5, 1.5));      
+#define SV_DEFAULTMAT_DIRT 1
+BPM dirt      = BPM(vec4(0.4, 0.3, 0.1, 1.0), 		vec4(0.02, 0.02, 0.02, 1.0),	vec2(0.8, 1.3));   
+#define SV_DEFAULTMAT_MIRROR 2
+BPM mirror    = BPM(vec4(0.0, 0.0, 0.0, 1.0), 		vec4(1.0, 1.0, 1.0, 1.0), 		vec2(0.01, 1.0));     
+#define SV_DEFAULTMAT_GLASS 3
+BPM glass     = BPM(vec4(0.01, 0.01, 0.01, 1.0), 	vec4(0.9, 0.9, 0.9, 1.0), 		vec2(0.05, 1.5));  
+#define SV_DEFAULTMAT_GRASS 4
+BPM grass     = BPM(vec4(0.13, 0.3, 0.05, 1.0), 	vec4(0.03, 0.07, 0.03, 1.0),	vec2(0.6, 1.33));
+#define SV_DEFAULTMAT_PLASTIC 5
+BPM plastic   = BPM(vec4(0.5, 0.5, 0.5, 1.0), 		vec4(0.3, 0.3, 0.3, 1.0), 		vec2(0.25, 1.49));    
+#define SV_DEFAULTMAT_GOLD 6
+BPM gold      = BPM(vec4(1.0, 0.8, 0.1, 1.0), 		vec4(1.0, 0.8, 0.1, 1.0), 		vec2(0.1, 0.47));     
+#define SV_DEFAULTMAT_SILVER 7
+BPM silver    = BPM(vec4(0.7, 0.7, 0.7, 1.0), 		vec4(0.9, 0.9, 1.0, 1.0), 		vec2(0.18, 0.15));    
+#define SV_DEFAULTMAT_COPPER 8
+BPM copper    = BPM(vec4(0.9, 0.4, 0.22, 1.0), 		vec4(0.9, 0.4, 0.22, 1.0), 		vec2(0.25, 0.26));  
+#define SV_DEFAULTMAT_WOOD 9
+BPM wood      = BPM(vec4(0.5, 0.34, 0.13, 1.0), 	vec4(0.1, 0.1, 0.09, 1.0), 		vec2(0.6, 1.55));  
+#define SV_DEFAULTMAT_STONE 10
+BPM stone     = BPM(vec4(0.4, 0.4, 0.45, 1.0), 		vec4(0.1, 0.1, 0.1, 1.0), 		vec2(0.65, 1.55));   
+#define SV_DEFAULTMAT_MARBLE 11
+BPM marble    = BPM(vec4(0.8, 0.8, 0.8, 1.0), 		vec4(0.5, 0.5, 0.5, 1.0), 		vec2(0.18, 1.49));    
+#define SV_DEFAULTMAT_WATER 12
+BPM water     = BPM(vec4(0.02, 0.04, 0.065, 1.0), 	vec4(0.2, 0.2, 0.2, 1.0), 		vec2(0.05, 1.33)); 
+#define SV_DEFAULTMAT_SKIN 13
+BPM skin      = BPM(vec4(1.0, 0.76, 0.65, 1.0), 	vec4(0.10, 0.06, 0.05, 1.0), 	vec2(0.8, 1.38));
+#define SV_DEFAULTMAT_ASPHALT 14
+BPM asphalt   = BPM(vec4(0.07, 0.07, 0.07, 1.0), 	vec4(0.01, 0.01, 0.01, 1.0), 	vec2(0.6, 1.6));
+#define SV_DEFAULTMAT_CHROME 5
+BPM chrome    = BPM(vec4(0.55, 0.57, 0.58, 1.0), 	vec4(0.99, 0.99, 0.99, 1.0), 	vec2(0.08, 1.0));
+#define SV_DEFAULTMAT_ALUM 16
+BPM aluminum  = BPM(vec4(0.77, 0.77, 0.77, 1.0), 	vec4(0.9, 0.92, 0.98, 1.0), 	vec2(0.07, 1.45));
+#define SV_DEFAULTMAT_CERAMIC 17
+BPM ceramic   = BPM(vec4(0.85, 0.78, 0.68, 1.0), 	vec4(0.3, 0.3, 0.3, 1.0), 		vec2(0.3, 1.54));   
+#define SV_DEFAULTMAT_PAPER 18
+BPM paper     = BPM(vec4(0.9, 0.9, 0.8, 1.0), 		vec4(0.1, 0.1, 0.09, 1.0), 		vec2(0.45, 1.47));    
+#define SV_DEFAULTMAT_RUBBER 19
+BPM rubber    = BPM(vec4(0.02, 0.02, 0.02, 1.0), 	vec4(0.05, 0.05, 0.05, 1.0), 	vec2(0.9, 1.51));
 
-#define DEFAULTMATS_COUNT 19
-//Removed mirror
+#define DEFAULTMATS_COUNT 20
 BPM defaultmats[DEFAULTMATS_COUNT] = {
-		iron, dirt, marble, glass, grass, plastic, gold, silver, copper, wood,
-		stone, water, skin, asphalt, chrome, aluminum, ceramic, paper, rubber
+		iron, dirt, mirror, glass, grass, plastic, gold, silver, copper, wood,
+		stone, marble, water, skin, asphalt, chrome, aluminum, ceramic, paper, rubber
 	};
 MAKE_MATGETTER_FUNC(defaultmats, DEFAULTMATS_COUNT)
 
