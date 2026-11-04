@@ -10,10 +10,11 @@
 //*************************************************
 
 //The Blinn-phong material
-#define TYPEMETA_BPM(V,N,I,L) TYPEMAIN(3,L)(BPM,V,N,I,\
+#define TYPEMETA_BPM(V,N,I,L) TYPEMAIN(4,L)(BPM,V,N,I,\
 vec4, 	basecolor,				ui("color = []")	\
 vec4, 	speccolor,				ui("color = []")	\
-vec2, 	RoughnessRefraction)	ui("lims=[0, 2, 1]")	
+vec2, 	RoughnessRefraction,	ui("lims=[0, 2, 1]")\
+float, 	transmission)	ui("lims=[0, 2, 1]")
 SUP_STRDECL(BPM)
 
 vec3 bpm_lighting_old(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, float kn)
@@ -258,45 +259,64 @@ vec3 get_light_pos_from_grid(vec3 p, Lightgrid lightgrid, ivec3 idx4seed_offset,
 
 // Default materials collection
 #define SV_DEFAULTMAT_IRON 0
-BPM iron      = BPM(vec4(0.6, 0.6, 0.6, 1.0), 		vec4(0.1, 0.1, 0.1, 1.0), 		vec2(0.5, 1.5));      
+BPM iron      = BPM(vec4(0.6, 0.6, 0.6, 1.0), vec4(0.56, 0.57, 0.58, 1.0), vec2(0.5, 1.5), 0.0);
+
 #define SV_DEFAULTMAT_DIRT 1
-BPM dirt      = BPM(vec4(0.4, 0.3, 0.1, 1.0), 		vec4(0.02, 0.02, 0.02, 1.0),	vec2(0.8, 1.3));   
+BPM dirt      = BPM(vec4(0.4, 0.3, 0.1, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.8, 1.3), 0.0);
+
 #define SV_DEFAULTMAT_MIRROR 2
-BPM mirror    = BPM(vec4(0.0, 0.0, 0.0, 1.0), 		vec4(1.0, 1.0, 1.0, 1.0), 		vec2(0.01, 1.0));     
+BPM mirror    = BPM(vec4(0.0, 0.0, 0.0, 1.0), vec4(1.0, 1.0, 1.0, 1.0), vec2(0.01, 1.0), 0.0);
+
 #define SV_DEFAULTMAT_GLASS 3
-BPM glass     = BPM(vec4(0.01, 0.01, 0.01, 1.0), 	vec4(0.9, 0.9, 0.9, 1.0), 		vec2(0.05, 1.5));  
+BPM glass     = BPM(vec4(0.01, 0.01, 0.01, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.05, 1.5), 0.8);
+
 #define SV_DEFAULTMAT_GRASS 4
-BPM grass     = BPM(vec4(0.13, 0.3, 0.05, 1.0), 	vec4(0.03, 0.07, 0.03, 1.0),	vec2(0.6, 1.33));
+BPM grass     = BPM(vec4(0.13, 0.3, 0.05, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.6, 1.33), 0.0);
+
 #define SV_DEFAULTMAT_PLASTIC 5
-BPM plastic   = BPM(vec4(0.5, 0.5, 0.5, 1.0), 		vec4(0.3, 0.3, 0.3, 1.0), 		vec2(0.25, 1.49));    
+BPM plastic   = BPM(vec4(0.5, 0.5, 0.5, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.25, 1.49), 0.0);
+
 #define SV_DEFAULTMAT_GOLD 6
-BPM gold      = BPM(vec4(1.0, 0.8, 0.1, 1.0), 		vec4(1.0, 0.8, 0.1, 1.0), 		vec2(0.1, 0.47));     
+BPM gold      = BPM(vec4(1.0, 0.8, 0.1, 1.0), vec4(1.0, 0.77, 0.34, 1.0), vec2(0.1, 0.47), 0.0);
+
 #define SV_DEFAULTMAT_SILVER 7
-BPM silver    = BPM(vec4(0.7, 0.7, 0.7, 1.0), 		vec4(0.9, 0.9, 1.0, 1.0), 		vec2(0.18, 0.15));    
+BPM silver    = BPM(vec4(0.7, 0.7, 0.7, 1.0), vec4(0.97, 0.96, 0.91, 1.0), vec2(0.18, 0.15), 0.0);
+
 #define SV_DEFAULTMAT_COPPER 8
-BPM copper    = BPM(vec4(0.9, 0.4, 0.22, 1.0), 		vec4(0.9, 0.4, 0.22, 1.0), 		vec2(0.25, 0.26));  
+BPM copper    = BPM(vec4(0.9, 0.4, 0.22, 1.0), vec4(0.95, 0.64, 0.54, 1.0), vec2(0.25, 0.26), 0.0);
+
 #define SV_DEFAULTMAT_WOOD 9
-BPM wood      = BPM(vec4(0.5, 0.34, 0.13, 1.0), 	vec4(0.1, 0.1, 0.09, 1.0), 		vec2(0.6, 1.55));  
+BPM wood      = BPM(vec4(0.5, 0.34, 0.13, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.6, 1.55), 0.0);
+
 #define SV_DEFAULTMAT_STONE 10
-BPM stone     = BPM(vec4(0.4, 0.4, 0.45, 1.0), 		vec4(0.1, 0.1, 0.1, 1.0), 		vec2(0.65, 1.55));   
+BPM stone     = BPM(vec4(0.4, 0.4, 0.45, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.65, 1.55), 0.0);
+
 #define SV_DEFAULTMAT_MARBLE 11
-BPM marble    = BPM(vec4(0.8, 0.8, 0.8, 1.0), 		vec4(0.5, 0.5, 0.5, 1.0), 		vec2(0.18, 1.49));    
+BPM marble    = BPM(vec4(0.8, 0.8, 0.8, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.18, 1.49), 0.0);
+
 #define SV_DEFAULTMAT_WATER 12
-BPM water     = BPM(vec4(0.02, 0.04, 0.065, 1.0), 	vec4(0.2, 0.2, 0.2, 1.0), 		vec2(0.05, 1.33)); 
+BPM water     = BPM(vec4(0.02, 0.04, 0.065, 1.0), vec4(0.02, 0.02, 0.02, 1.0), vec2(0.05, 1.33), 0.4);
+
 #define SV_DEFAULTMAT_SKIN 13
-BPM skin      = BPM(vec4(1.0, 0.76, 0.65, 1.0), 	vec4(0.10, 0.06, 0.05, 1.0), 	vec2(0.8, 1.38));
+BPM skin      = BPM(vec4(1.0, 0.76, 0.65, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.8, 1.38), 0.0);
+
 #define SV_DEFAULTMAT_ASPHALT 14
-BPM asphalt   = BPM(vec4(0.07, 0.07, 0.07, 1.0), 	vec4(0.01, 0.01, 0.01, 1.0), 	vec2(0.6, 1.6));
-#define SV_DEFAULTMAT_CHROME 5
-BPM chrome    = BPM(vec4(0.55, 0.57, 0.58, 1.0), 	vec4(0.99, 0.99, 0.99, 1.0), 	vec2(0.08, 1.0));
+BPM asphalt   = BPM(vec4(0.07, 0.07, 0.07, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.6, 1.6), 0.0);
+
+#define SV_DEFAULTMAT_CHROME 15
+BPM chrome    = BPM(vec4(0.55, 0.57, 0.58, 1.0), vec4(0.99, 0.99, 0.99, 1.0), vec2(0.08, 1.0), 0.0);
+
 #define SV_DEFAULTMAT_ALUM 16
-BPM aluminum  = BPM(vec4(0.77, 0.77, 0.77, 1.0), 	vec4(0.9, 0.92, 0.98, 1.0), 	vec2(0.07, 1.45));
+BPM aluminum  = BPM(vec4(0.77, 0.77, 0.77, 1.0), vec4(0.91, 0.92, 0.98, 1.0), vec2(0.07, 1.45), 0.0);
+
 #define SV_DEFAULTMAT_CERAMIC 17
-BPM ceramic   = BPM(vec4(0.85, 0.78, 0.68, 1.0), 	vec4(0.3, 0.3, 0.3, 1.0), 		vec2(0.3, 1.54));   
+BPM ceramic   = BPM(vec4(0.85, 0.78, 0.68, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.3, 1.54), 0.0);
+
 #define SV_DEFAULTMAT_PAPER 18
-BPM paper     = BPM(vec4(0.9, 0.9, 0.8, 1.0), 		vec4(0.1, 0.1, 0.09, 1.0), 		vec2(0.45, 1.47));    
+BPM paper     = BPM(vec4(0.9, 0.9, 0.8, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.45, 1.47), 0.0);
+
 #define SV_DEFAULTMAT_RUBBER 19
-BPM rubber    = BPM(vec4(0.02, 0.02, 0.02, 1.0), 	vec4(0.05, 0.05, 0.05, 1.0), 	vec2(0.9, 1.51));
+BPM rubber    = BPM(vec4(0.02, 0.02, 0.02, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.9, 1.51), 0.0);
 
 #define DEFAULTMATS_COUNT 20
 BPM defaultmats[DEFAULTMATS_COUNT] = {
@@ -306,26 +326,26 @@ BPM defaultmats[DEFAULTMATS_COUNT] = {
 MAKE_MATGETTER_FUNC(defaultmats, DEFAULTMATS_COUNT)
 
 // Plants materials collection
-BPM grass_vivid     = BPM(vec4(0.16, 0.35, 0.07, 1.0), vec4(0.03, 0.08, 0.04, 1.0), vec2(0.5, 1.38));  
-BPM clover_leaf     = BPM(vec4(0.20, 0.46, 0.15, 1.0), vec4(0.02, 0.06, 0.02, 1.0), vec2(0.5, 1.42));  
-BPM fern            = BPM(vec4(0.13, 0.33, 0.14, 1.0), vec4(0.03, 0.06, 0.03, 1.0), vec2(0.5, 1.41));  
-BPM bamboo_leaf     = BPM(vec4(0.28, 0.52, 0.15, 1.0), vec4(0.05, 0.07, 0.01, 1.0), vec2(0.4, 1.44));  
-BPM spinach_leaf    = BPM(vec4(0.21, 0.40, 0.18, 1.0), vec4(0.03, 0.09, 0.03, 1.0), vec2(0.55, 1.40)); 
-BPM moss            = BPM(vec4(0.24, 0.40, 0.12, 1.0), vec4(0.03, 0.09, 0.04, 1.0), vec2(0.65, 1.39)); 
-BPM lettuce_leaf    = BPM(vec4(0.30, 0.68, 0.24, 1.0), vec4(0.05, 0.10, 0.02, 1.0), vec2(0.45, 1.36)); 
-BPM water_lily_leaf = BPM(vec4(0.17, 0.33, 0.08, 1.0), vec4(0.09, 0.17, 0.06, 1.0), vec2(0.38, 1.32)); 
-BPM ivy_leaf        = BPM(vec4(0.11, 0.23, 0.09, 1.0), vec4(0.04, 0.10, 0.04, 1.0), vec2(0.52, 1.46)); 
-BPM cactus_skin     = BPM(vec4(0.18, 0.36, 0.14, 1.0), vec4(0.09, 0.11, 0.08, 1.0), vec2(0.62, 1.48)); 
-BPM withered_leaf   = BPM(vec4(0.23, 0.28, 0.13, 1.0), vec4(0.03, 0.05, 0.02, 1.0), vec2(0.68, 1.47)); 
-BPM autumn_leaf     = BPM(vec4(0.65, 0.30, 0.10, 1.0), vec4(0.09, 0.07, 0.04, 1.0), vec2(0.72, 1.45)); 
-BPM yellow_leaf     = BPM(vec4(0.72, 0.67, 0.13, 1.0), vec4(0.10, 0.12, 0.01, 1.0), vec2(0.77, 1.43)); 
-BPM red_maple_leaf  = BPM(vec4(0.73, 0.21, 0.17, 1.0), vec4(0.10, 0.09, 0.06, 1.0), vec2(0.70, 1.44)); 
-BPM poppy_petal     = BPM(vec4(0.94, 0.35, 0.15, 1.0), vec4(0.11, 0.08, 0.05, 1.0), vec2(0.58, 1.39)); 
-BPM marigold_petal  = BPM(vec4(0.98, 0.62, 0.12, 1.0), vec4(0.14, 0.13, 0.03, 1.0), vec2(0.62, 1.37)); 
-BPM sunflower_petal = BPM(vec4(0.97, 0.85, 0.20, 1.0), vec4(0.13, 0.16, 0.05, 1.0), vec2(0.60, 1.41)); 
-BPM lily_petal      = BPM(vec4(0.98, 0.95, 0.92, 1.0), vec4(0.18, 0.17, 0.16, 1.0), vec2(0.64, 1.36)); 
-BPM dried_leaf 		= BPM(vec4(0.62, 0.48, 0.21, 1.0), vec4(0.07, 0.06, 0.03, 1.0), vec2(0.67, 1.41)); 
-BPM daisy_petal     = BPM(vec4(0.96, 0.93, 0.89, 1.0), vec4(0.15, 0.15, 0.15, 1.0), vec2(0.70, 1.52)); 
+BPM grass_vivid     = BPM(vec4(0.16, 0.35, 0.07, 1.0), vec4(0.03, 0.08, 0.04, 1.0), vec2(0.5,  1.38), 0.0);  
+BPM clover_leaf     = BPM(vec4(0.20, 0.46, 0.15, 1.0), vec4(0.02, 0.06, 0.02, 1.0), vec2(0.5,  1.42), 0.0);  
+BPM fern            = BPM(vec4(0.13, 0.33, 0.14, 1.0), vec4(0.03, 0.06, 0.03, 1.0), vec2(0.5,  1.41), 0.0);  
+BPM bamboo_leaf     = BPM(vec4(0.28, 0.52, 0.15, 1.0), vec4(0.05, 0.07, 0.01, 1.0), vec2(0.4,  1.44), 0.0);  
+BPM spinach_leaf    = BPM(vec4(0.21, 0.40, 0.18, 1.0), vec4(0.03, 0.09, 0.03, 1.0), vec2(0.55, 1.40), 0.0); 
+BPM moss            = BPM(vec4(0.24, 0.40, 0.12, 1.0), vec4(0.03, 0.09, 0.04, 1.0), vec2(0.65, 1.39), 0.0); 
+BPM lettuce_leaf    = BPM(vec4(0.30, 0.68, 0.24, 1.0), vec4(0.05, 0.10, 0.02, 1.0), vec2(0.45, 1.36), 0.0); 
+BPM water_lily_leaf = BPM(vec4(0.17, 0.33, 0.08, 1.0), vec4(0.09, 0.17, 0.06, 1.0), vec2(0.38, 1.32), 0.0); 
+BPM ivy_leaf        = BPM(vec4(0.11, 0.23, 0.09, 1.0), vec4(0.04, 0.10, 0.04, 1.0), vec2(0.52, 1.46), 0.0); 
+BPM cactus_skin     = BPM(vec4(0.18, 0.36, 0.14, 1.0), vec4(0.09, 0.11, 0.08, 1.0), vec2(0.62, 1.48), 0.0); 
+BPM withered_leaf   = BPM(vec4(0.23, 0.28, 0.13, 1.0), vec4(0.03, 0.05, 0.02, 1.0), vec2(0.68, 1.47), 0.0); 
+BPM autumn_leaf     = BPM(vec4(0.65, 0.30, 0.10, 1.0), vec4(0.09, 0.07, 0.04, 1.0), vec2(0.72, 1.45), 0.0); 
+BPM yellow_leaf     = BPM(vec4(0.72, 0.67, 0.13, 1.0), vec4(0.10, 0.12, 0.01, 1.0), vec2(0.77, 1.43), 0.0); 
+BPM red_maple_leaf  = BPM(vec4(0.73, 0.21, 0.17, 1.0), vec4(0.10, 0.09, 0.06, 1.0), vec2(0.70, 1.44), 0.0); 
+BPM poppy_petal     = BPM(vec4(0.94, 0.35, 0.15, 1.0), vec4(0.11, 0.08, 0.05, 1.0), vec2(0.58, 1.39), 0.0); 
+BPM marigold_petal  = BPM(vec4(0.98, 0.62, 0.12, 1.0), vec4(0.14, 0.13, 0.03, 1.0), vec2(0.62, 1.37), 0.0); 
+BPM sunflower_petal = BPM(vec4(0.97, 0.85, 0.20, 1.0), vec4(0.13, 0.16, 0.05, 1.0), vec2(0.60, 1.41), 0.0); 
+BPM lily_petal      = BPM(vec4(0.98, 0.95, 0.92, 1.0), vec4(0.18, 0.17, 0.16, 1.0), vec2(0.64, 1.36), 0.0); 
+BPM dried_leaf 		= BPM(vec4(0.62, 0.48, 0.21, 1.0), vec4(0.07, 0.06, 0.03, 1.0), vec2(0.67, 1.41), 0.0); 
+BPM daisy_petal     = BPM(vec4(0.96, 0.93, 0.89, 1.0), vec4(0.15, 0.15, 0.15, 1.0), vec2(0.70, 1.52), 0.0); 
 
 #define PLANTMATS_COUNT 20
 BPM plantmats[PLANTMATS_COUNT] = { 
