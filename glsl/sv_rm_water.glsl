@@ -13,7 +13,7 @@
 #define DRAG_MULT (0.38 * WSCALE)  // changes how much waves pull on the water
 #define WATER_DEPTH (1.0 * WSCALE) // how deep is the water
 
-#define ITERATIONS_RAYMARCH 36  // waves iterations of raymarching
+#define ITERATIONS_RAYMARCH 12  // waves iterations of raymarching
 #define ITERATIONS_NORMAL 36 // waves iterations when calculating normals
 
 
@@ -85,6 +85,12 @@ bool getCameraIsUnderwater(vec3 camera, float waterSurfaceY, float waterDepth)
 {
 	return camera.y < waterHeightAt(camera.xz, ITERATIONS_RAYMARCH, waterSurfaceY, waterDepth);
 }
+bool getCameraIsUnderwater(vec3 camera)
+{
+	return getCameraIsUnderwater(camera, 0.0, WATER_DEPTH);
+}
+
+
 
 float sdf_water(vec3 p, int iterations, float waterSurfaceY, float waterDepth, bool cameraIsUnderwater)
 {
@@ -117,7 +123,7 @@ float sdf_water(vec3 p, int iterations, bool cameraIsUnderwater)
 float water_march(Ray ray, float start, float end, bool cameraIsUnderwater)
 {	
 	float depth_reached = start;								
-	for (int i = 0; i < 64; i++) 
+	for (int i = 0; i < 200; i++) 
 	{		
 		float dist_to_water = sdf_water(walkray(ray, depth_reached), ITERATIONS_RAYMARCH, cameraIsUnderwater);		
 		if (dist_to_water < SV_RM_WATER_EPSILON) 					
