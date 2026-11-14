@@ -32,6 +32,11 @@
 
 #define SDF_OUTSIDE (SDF_MAX_DIST + 1)
 
+bool distIsOutside(float dist, float maxDist)
+{
+	return dist > maxDist - SDF_EPSILON;
+}
+
 #ifndef CORE_OPERATIONS_ON_SDF_DISTANCES
 //***************************************************************
 // Uni is union, adds two objects together.

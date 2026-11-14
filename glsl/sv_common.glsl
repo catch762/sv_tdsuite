@@ -788,3 +788,8 @@ float boolean11(bool b)
 {
 	return n01_to_11(int(b));
 }
+//returns 1.0 if true, 0.0 if false
+float boolean01(bool b)
+{
+	return float(b);
+}
