@@ -325,7 +325,13 @@ class QTouchTcpConnection:
 		#	float_value = packet.float_values[i]
 		#	op_vardata[var_index, 1] = float_value
 		
+		while op_vardata.numCols < 2:
+			op_vardata.appendCol([])
+		
 		valuesColumn = op_vardata.col(1, val=True)
+		if valuesColumn is None:
+			valuesColumn = [0] * packet.total_entries
+		
 		for i in range(len(packet.float_values)):
 			var_index = packet.first_index + i
 			float_value = packet.float_values[i]

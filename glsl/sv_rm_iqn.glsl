@@ -4,7 +4,7 @@
 
 #define IQN_ONLY_ADD 0
 #define IQN_SWITCH_ADD_SUB 0
-#define IQN_ONLY_SHROT 1
+#define IQN_ONLY_SHROT 0
 
 //Note: some functions use 'vec4 idx', where XYZ is 3d grid index and W is octavedepth01
 
@@ -43,9 +43,15 @@ IQN_ELEM_PARAM_LIST(ELEMPARAM_ADD)
 
 vec3 invertForOddIdx(vec3 p, vec3 idx)
 {
-	if ((int(idx.x)&1)==1) p.x *= -1;
-	if ((int(idx.y)&1)==1) p.y *= -1;
-	if ((int(idx.z)&1)==1) p.z *= -1;
+	p.x *= even11(int(idx.x));
+	p.y *= even11(int(idx.y));
+	p.z *= even11(int(idx.z));
+	
+	
+	//if ((int(idx.x)&1)==1) p.x *= -1;
+	//if ((int(idx.y)&1)==1) p.y *= -1;
+	//if ((int(idx.z)&1)==1) p.z *= -1;
+	
 	return p;
 }
 
@@ -67,7 +73,7 @@ vec3 iqn_check8_transform(vec3 p, vec3 idx)
 #define IQNEL_CHECK8(ELEM) 	ELEM ## _check8 
 
 #define IQNEL_DEF_CHECK8(ELEM) float IQNEL_CHECK8(ELEM) 							\
-(vec3 p, ElemParams prm_elem, float depth01)  				\
+(vec3 p, ElemParams prm_elem, float depth01)  										\
 {																					\
 	vec3 i = round(p);																\
 	vec3 f = p-i;																	\
@@ -83,6 +89,28 @@ vec3 iqn_check8_transform(vec3 p, vec3 idx)
 				vec3 thiscoord = p - thisidx;										\
 				thiscoord = iqn_check8_transform(thiscoord, thisidx);				\
 				RES = min(RES, ELEM(thiscoord, vec4(thisidx, depth01), prm_elem));	\
+			}																		\
+		}																			\
+	}																				\
+	return RES;																		\
+}
+
+#define IQNEL_DEF_SIMPLE_CHECK8(ELEM) float IQNEL_CHECK8(ELEM) 						\
+(vec3 p)  																			\
+{																					\
+	vec3 i = round(p);																\
+	vec3 f = p-i;																	\
+	vec3 off = sign(f);																\
+	float RES = 99999;																\
+	for (int y = 0; y <= 1; ++y)													\
+	{																				\
+		for (int x = 0; x <= 1; ++x)												\
+		{																			\
+			for (int z = 0; z <= 1; ++z)											\
+			{																		\
+				vec3 thisidx = i + vec3(x,y,z) * off;								\
+				vec3 thiscoord = p - thisidx;										\
+				RES = min(RES, ELEM(thiscoord, thisidx));							\
 			}																		\
 		}																			\
 	}																				\
@@ -338,6 +366,59 @@ vec2 iqn_master(	vec3 			p,
 		#if IQN_SWITCH_ADD_SUB
 			mode = 1 - mode;
 		#endif
+    }
+    return vec2(curdist, cur_octid);
+}
+
+float iqnel_simple_sphere(vec3 p, vec3 idx)
+{
+	return sdf_sphere(p, 0.5 * iq_hash3(idx));
+}
+IQNEL_DEF_SIMPLE_CHECK8(iqnel_simple_sphere);
+
+vec2 iqn_addspheres(vec3 			p,
+					float 			host_dist,
+					int 			mode,
+					int 			numoct,
+					vec2 			NeighbOctmod,
+					vec4 			scale_smooth2_octscale)
+{
+	float		curdist			= host_dist;
+    float 		curscale        = scale_smooth2_octscale.x;
+    const float SM_K_PARENTING  = scale_smooth2_octscale.y;
+    const float SM_K_MAINOP     = scale_smooth2_octscale.z;
+	const float octscalemod		= scale_smooth2_octscale.w;
+		
+	float 		neighborhood 	= NeighbOctmod.x;
+	
+	int 		cur_octid 		= -1;
+	int 		prev_octid 		= cur_octid;
+	
+    p = p / curscale;   
+    for (int i = 0; i<numoct; i++ )
+    {
+        float   nextdist    	= curscale * IQNEL_CHECK8(iqnel_simple_sphere)(p);
+		
+		float 	parentingdist 	= curdist - neighborhood * curscale;
+		
+        nextdist            	= sop_int_sm	(nextdist, parentingdist, curscale * SM_K_PARENTING);
+			
+		if (bool(IQN_ONLY_ADD) || mode == 1) //smooth union
+		{
+			cur_octid 	= mix(prev_octid, i, nextdist < curdist);
+			
+			curdist    	= sop_uni_sm  	(curdist, nextdist, curscale * SM_K_MAINOP);	
+		}
+        else //smooth subtraction
+		{
+			curdist    	= sop_sub_sm  	(curdist, nextdist, curscale * SM_K_MAINOP);
+		}	
+				
+        p               = iqn_OctaveTransformOperation(p, IQN_IQROT, vec4(0), octscalemod);
+		
+		prev_octid 		= cur_octid;
+        curscale        *= octscalemod;		
+		neighborhood 	*= NeighbOctmod.y;
     }
     return vec2(curdist, cur_octid);
 }

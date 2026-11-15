@@ -295,7 +295,7 @@ BPM stone     = BPM(vec4(0.4, 0.4, 0.45, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2
 BPM marble    = BPM(vec4(0.8, 0.8, 0.8, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.18, 1.49), 0.0);
 
 #define SV_DEFAULTMAT_WATER 12
-BPM water     = BPM(vec4(0.02, 0.04, 0.065, 1.0), vec4(0.02, 0.02, 0.02, 1.0), vec2(0.05, 1.33), 0.4);
+BPM water     = BPM(vec4(0.02, 0.035, 0.045, 1.0), vec4(0.02, 0.02, 0.02, 1.0), vec2(0.05, 1.33), 0.4);
 
 #define SV_DEFAULTMAT_SKIN 13
 BPM skin      = BPM(vec4(1.0, 0.76, 0.65, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.8, 1.38), 0.0);
