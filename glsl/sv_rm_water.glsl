@@ -81,13 +81,13 @@ float waterHeightAt(vec2 xz, int iterations, float waterSurfaceY, float waterDep
 	return waterSurfaceY + (getwaves01(xz, iterations) - 1.0) * waterDepth;
 }
 
-bool getCameraIsUnderwater(vec3 camera, float waterSurfaceY, float waterDepth)
+bool getPointIsUnderwater(vec3 point, float waterSurfaceY, float waterDepth)
 {
-	return camera.y < waterHeightAt(camera.xz, ITERATIONS_RAYMARCH, waterSurfaceY, waterDepth);
+	return point.y < waterHeightAt(point.xz, ITERATIONS_RAYMARCH, waterSurfaceY, waterDepth);
 }
-bool getCameraIsUnderwater(vec3 camera)
+bool getPointIsUnderwater(vec3 point)
 {
-	return getCameraIsUnderwater(camera, 0.0, WATER_DEPTH);
+	return getPointIsUnderwater(point, 0.0, WATER_DEPTH);
 }
 
 

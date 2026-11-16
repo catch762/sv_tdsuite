@@ -39,6 +39,11 @@ float sdf_plane( vec3 p, vec3 normal, float height ) {
     //n must be normalized
     return dot(p,normal) + height;
 }
+float sdf_yPlane(vec3 p, float height)
+{
+	return p.y - height;
+}
+
 float sdf_quad( vec3 p, vec3 a, vec3 b, vec3 c, vec3 d ) {
     vec3 ba   = b - a; vec3 pa = p - a;
     vec3 cb   = c - b; vec3 pb = p - b;
