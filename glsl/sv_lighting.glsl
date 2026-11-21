@@ -10,12 +10,23 @@
 //*************************************************
 
 //The Blinn-phong material
+//transm unused, remove
 #define TYPEMETA_BPM(V,N,I,L) TYPEMAIN(4,L)(BPM,V,N,I,\
 vec4, 	basecolor,				ui("color = []")	\
 vec4, 	speccolor,				ui("color = []")	\
 vec2, 	RoughnessRefraction,	ui("lims=[0, 2, 1]")\
 float, 	transmission)	ui("lims=[0, 2, 1]")
 SUP_STRDECL(BPM)
+
+BPM mix(BPM a, BPM b, float bRatio01)
+{
+	return BPM(
+		mix(a.basecolor, b.basecolor, bRatio01),
+		mix(a.speccolor, b.speccolor, bRatio01),
+		mix(a.RoughnessRefraction, b.RoughnessRefraction, bRatio01),
+		mix(a.transmission, b.transmission, bRatio01)
+	);
+}
 
 vec3 bpm_lighting_old(vec3 n, vec3 rd, vec3 l, vec3 kl, vec3 kd, vec3 ks, float km, float kn)
 {
@@ -295,7 +306,7 @@ BPM stone     = BPM(vec4(0.4, 0.4, 0.45, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2
 BPM marble    = BPM(vec4(0.8, 0.8, 0.8, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.18, 1.49), 0.0);
 
 #define SV_DEFAULTMAT_WATER 12
-BPM water     = BPM(vec4(0.02, 0.035, 0.045, 1.0), vec4(0.02, 0.02, 0.02, 1.0), vec2(0.05, 1.33), 0.4);
+BPM water     = BPM(vec4(0.02, 0.035, 0.045, 1.0), vec4(0.02, 0.02, 0.02, 1.0), vec2(0.01, 1.33), 0.4);
 
 #define SV_DEFAULTMAT_SKIN 13
 BPM skin      = BPM(vec4(1.0, 0.76, 0.65, 1.0), vec4(0.04, 0.04, 0.04, 1.0), vec2(0.8, 1.38), 0.0);
